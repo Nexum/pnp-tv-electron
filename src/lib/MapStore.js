@@ -2,6 +2,11 @@ import ElectronStore from "electron-store";
 import EventEmitter from "events";
 import ObjectID from "bson-objectid";
 import {useEffect, useState} from "react";
+import fs from "fs-jetpack";
+import path from "path";
+import {remote} from "electron";
+
+const {app} = remote;
 
 class MapStore extends EventEmitter {
 
@@ -90,6 +95,17 @@ class MapStore extends EventEmitter {
         }
 
         return this.getMap(values._id);
+    }
+
+    getMapFilePath(_id) {
+        return path.join(app.getPath("userData"), "maps", _id);
+    }
+
+    saveMapFile(_id, srcFilePath) {
+        const targetFilePath = this.getMapFilePath(_id);
+        fs.copy(srcFilePath, targetFilePath, {
+            overwrite: true,
+        });
     }
 
     useActive() {

@@ -1,13 +1,16 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Stage, Layer, Rect, Image} from "react-konva";
 import Konva from "konva";
+import MapStore from "../../lib/MapStore";
 
 
 export default function MapLayer({base}) {
     const layer = useRef();
 
+    const [map, setActive] = MapStore.useActive();
+
     useEffect(() => {
-        Konva.Image.fromURL(`/api/file/test/png?loadTimestamp=${Date.now()}`, function (image) {
+        Konva.Image.fromURL(MapStore.getMapFilePath(map._id) + "?time=" + Date.now(), function (image) {
             // delete everything
             layer.current.destroyChildren();
 
@@ -36,7 +39,7 @@ export default function MapLayer({base}) {
             layer.current.add(image);
             layer.current.draw();
         });
-    }, []);
+    }, [map]);
 
     return (
         <Layer ref={layer} listening={false}></Layer>
