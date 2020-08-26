@@ -29,14 +29,19 @@ app.on("window-all-closed", () => {
     app.quit();
 });
 
+const defaultWindowOptions = {
+    webPreferences: {
+        nodeIntegration: true,
+    },
+    frame: false
+};
+
 
 function initGmWindow() {
     const mainWindow = createWindow("main", {
+        ...defaultWindowOptions,
         width: 1280,
         height: 720,
-        webPreferences: {
-            nodeIntegration: true,
-        },
     });
 
     mainWindow.loadURL(
@@ -54,11 +59,9 @@ function initGmWindow() {
 
 function initTvWindow() {
     const mainWindow = createWindow("tv", {
+        ...defaultWindowOptions,
         width: 1280,
         height: 720,
-        webPreferences: {
-            nodeIntegration: true,
-        },
     });
 
     mainWindow.loadURL(

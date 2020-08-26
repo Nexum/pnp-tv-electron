@@ -24,9 +24,9 @@ export default function Map({isGm}) {
     });
 
     const layers = {
-        background: <BackgroundLayer key="background" base={base}></BackgroundLayer>,
-        map: <MapLayer key="map" base={base}></MapLayer>,
-        fow: <FowLayer key="fow" base={base}></FowLayer>,
+        background: <BackgroundLayer key="background" isGm={isGm} base={base}></BackgroundLayer>,
+        map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
+        fow: <FowLayer key="fow" isGm={isGm} base={base}></FowLayer>,
     };
 
     let layerOrder = [

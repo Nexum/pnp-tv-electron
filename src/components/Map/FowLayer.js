@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {Group, Layer, Line, Rect} from "react-konva";
 import Konva from "konva";
+import MapStore from "../../lib/MapStore";
 
 let painting;
 
@@ -14,10 +15,7 @@ export default function FowLayer({isGm, base}) {
         fowMode: "remove",
         fowBrushSize: 120,
     };
-    const map = {
-        fow: null,
-        _id: "test"
-    }
+    const [map, setActive] = MapStore.useActive();
 
     useEffect(() => {
         if (group.current) {
@@ -73,11 +71,9 @@ export default function FowLayer({isGm, base}) {
             return;
         }
 
-        await fetch(`/api/map/${map._id}/fow`, {
-            method: "POST",
-            body: JSON.stringify({
-                fow: data,
-            }),
+        MapStore.save({
+            _id: map._id,
+            fow: data,
         });
     }
 

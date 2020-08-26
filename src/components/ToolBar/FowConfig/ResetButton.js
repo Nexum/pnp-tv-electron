@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {debounce} from "lodash";
+import MapStore from "../../../lib/MapStore";
 
 export default function ResetButton({map}) {
     if (!map || !map._id) {
@@ -7,11 +8,9 @@ export default function ResetButton({map}) {
     }
 
     async function resetFow() {
-        await fetch(`/api/map/${map._id}/fow`, {
-            method: "POST",
-            body: JSON.stringify({
-                fow: null,
-            }),
+        MapStore.save({
+            _id: map._id,
+            fow: null,
         });
     }
 
