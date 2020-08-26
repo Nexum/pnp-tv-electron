@@ -1,0 +1,13 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+body, .screen {
+    height: 100vh;
+    width: 100vw;
+    max-height: 100vh;
+    max-width: 100vw;
+    overflow: hidden;
+}
+
+.config-window {
+    position: fixed;
+}
