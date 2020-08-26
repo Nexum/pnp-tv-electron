@@ -55,7 +55,7 @@ export default function FowLayer({isGm, base}) {
     }, [map]);
 
     useEffect(() => {
-        Konva.Image.fromURL(`/img/fow_base_2.jpg`, function (image) {
+        Konva.Image.fromURL(`img/fow_base_2.jpg`, function (image) {
             image.cache();
             if (isGm) {
                 image.opacity(0.8);
