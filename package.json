@@ -45,6 +45,7 @@
         "electron-mocha": "^8.1.1",
         "electron-store": "^5.2.0",
         "friendly-errors-webpack-plugin": "^1.7.0",
+        "hotkeys-js": "^3.8.1",
         "konva": "^7.0.6",
         "lodash": "^4.17.20",
         "mocha": "^7.1.1",

@@ -4,6 +4,7 @@ import ConfigWindow from "./ToolBar/ConfigWindow";
 import MapConfig from "./ToolBar/MapConfig";
 import CreatureConfig from "./ToolBar/CreatureConfig";
 import PaintConfig from "./ToolBar/PaintConfig";
+import ConfigStore from "../lib/ConfigStore";
 
 export default function ControlPanel({}) {
     const panels = [
@@ -32,19 +33,15 @@ export default function ControlPanel({}) {
             config: CreatureConfig,
         },
     ];
-    const [activePanel, setActivePanel] = useState(null);
+    const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");
 
     function togglePanel(panel) {
-        if (activePanel === panel) {
-            setActivePanel(null);
+        if (activeToolbarItem === panel) {
+            ConfigStore.set("activeToolbarItem", null);
         } else {
-            setActivePanel(panel);
+            ConfigStore.set("activeToolbarItem", panel);
         }
     }
-
-    useEffect(() => {
-        //togglePanel(2);
-    }, []);
 
     return (
         <>
@@ -61,7 +58,7 @@ export default function ControlPanel({}) {
                                     <li
                                         ref={v.button}
                                         key={i}
-                                        className={"nav-item " + (i === activePanel && "active")}
+                                        className={"nav-item " + (i === activeToolbarItem && "active")}
                                     >
                                         <a className="nav-link" href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
                                     </li>
@@ -71,8 +68,8 @@ export default function ControlPanel({}) {
                     </ul>
                 </div>
             </nav>
-            {activePanel !== null && (
-                <ConfigWindow panel={panels[activePanel]}/>
+            {activeToolbarItem !== null && panels[activeToolbarItem] && (
+                <ConfigWindow panel={panels[activeToolbarItem]}/>
             )}
         </>
     );

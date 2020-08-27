@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {debounce} from "lodash";
+import MapStore from "../../../lib/MapStore";
 
 export default function ResetButton({map}) {
     if (!map || !map._id) {
@@ -7,12 +8,7 @@ export default function ResetButton({map}) {
     }
 
     async function resetMarker() {
-        await fetch(`/api/map/${map._id}/marker`, {
-            method: "POST",
-            body: JSON.stringify({
-                marker: null,
-            }),
-        });
+        MapStore.saveMarker(map._id, null);
     }
 
     return (

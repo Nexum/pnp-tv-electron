@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {Group, Layer, Line, Rect} from "react-konva";
 import Konva from "konva";
 import MapStore from "../../lib/MapStore";
+import ConfigStore from "../../lib/ConfigStore";
 
 let painting;
 
@@ -11,12 +12,10 @@ export default function FowLayer({isGm, base}) {
     const fow = useRef();
     const group = useRef();
     const fogColor = "#dedede";
-    const gmOptions = {
-        fowMode: "remove",
-        fowBrushSize: 120,
-    };
     const [map, setActiveMap] = MapStore.useActive();
     const fowData = MapStore.useActiveFow();
+    const fowMode = ConfigStore.useConfig("fowMode");
+    const fowBrushSize = ConfigStore.useConfig("fowBrushSize");
 
     useEffect(() => {
         if (group.current) {
@@ -82,7 +81,7 @@ export default function FowLayer({isGm, base}) {
 
         line.current.points(getPointerCoords());
 
-        if (gmOptions.fowMode === "remove") {
+        if (fowMode === "remove") {
             line.current.globalCompositeOperation("destination-out");
         } else {
             line.current.globalCompositeOperation("destination-over");
@@ -99,7 +98,7 @@ export default function FowLayer({isGm, base}) {
                 pos.y / layer.current.getStage().scaleY(),
             ];
 
-            const halfBrushWidht = gmOptions.fowBrushSize / 2;
+            const halfBrushWidht = parseInt(fowBrushSize) / 2;
             const edgeX = layer.current.getStage().width() - halfBrushWidht;
             const edgeY = layer.current.getStage().height() - halfBrushWidht;
 
@@ -139,7 +138,7 @@ export default function FowLayer({isGm, base}) {
 
         painting = false;
 
-        if (gmOptions.fowMode === "remove") {
+        if (fowMode === "remove") {
             line.current.globalCompositeOperation(null);
             fow.current && fow.current.globalCompositeOperation(null);
             fow.current && fow.current.blurRadius(0);
@@ -182,7 +181,7 @@ export default function FowLayer({isGm, base}) {
                 <Line
                     ref={line}
                     stroke={fogColor}
-                    strokeWidth={gmOptions.fowBrushSize}
+                    strokeWidth={fowBrushSize}
                     opacity={1}
                     lineJoin="round"
                     lineCap="round"

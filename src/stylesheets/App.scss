@@ -1,6 +1,7 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
-body, .screen {
+html, body, .screen {
+    background: black;
     height: 100vh;
     width: 100vw;
     max-height: 100vh;

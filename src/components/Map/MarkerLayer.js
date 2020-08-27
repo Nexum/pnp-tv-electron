@@ -1,14 +1,22 @@
 import {useEffect, useRef, useState} from "react";
 import {Group, Layer, Line, Rect} from "react-konva";
 import Konva from "konva";
+import ConfigStore from "../../lib/ConfigStore";
+import MapStore from "../../lib/MapStore";
 
 let painting;
 
-export default function FowLayer({map, isGm, base, gmOptions}) {
+export default function FowLayer({isGm, base}) {
     const layer = useRef();
     const line = useRef();
     const marker = useRef();
     const group = useRef();
+    const [map, setActiveMap] = MapStore.useActive();
+    const markerData = MapStore.useActiveMarker();
+    const paintColor = ConfigStore.useConfig("paintColor");
+    const paintBrushSize = ConfigStore.useConfig("paintBrushSize");
+    const paintColorAlpha = ConfigStore.useConfig("paintColorAlpha");
+    const paintMode = ConfigStore.useConfig("paintMode");
 
     useEffect(() => {
         if (group.current) {
@@ -16,13 +24,13 @@ export default function FowLayer({map, isGm, base, gmOptions}) {
                 marker.current.destroy();
             }
 
-            if (!map.marker) {
+            if (!markerData) {
                 layer.current.batchDraw();
                 return;
             }
 
             const imageObj = document.createElement("img");
-            imageObj.src = map.marker;
+            imageObj.src = markerData;
             imageObj.onload = function () {
                 const newImage = new Konva.Image({
                     image: imageObj,
@@ -38,19 +46,14 @@ export default function FowLayer({map, isGm, base, gmOptions}) {
                 layer.current.batchDraw();
             };
         }
-    }, [map]);
+    }, [markerData]);
 
     async function save(data) {
         if (!isGm) {
             return;
         }
 
-        await fetch(`/api/map/${map._id}/marker`, {
-            method: "POST",
-            body: JSON.stringify({
-                marker: data,
-            }),
-        });
+        MapStore.saveMarker(map._id, data);
     }
 
     function onMouseDown(e) {
@@ -70,7 +73,7 @@ export default function FowLayer({map, isGm, base, gmOptions}) {
                 pos.y / layer.current.getStage().scaleY(),
             ];
 
-            const halfBrushWidht = gmOptions.paintBrushSize / 2;
+            const halfBrushWidht = paintBrushSize / 2;
             const edgeX = layer.current.getStage().width() - halfBrushWidht;
             const edgeY = layer.current.getStage().height() - halfBrushWidht;
 
@@ -135,12 +138,12 @@ export default function FowLayer({map, isGm, base, gmOptions}) {
                 </Rect>
                 <Line
                     ref={line}
-                    stroke={gmOptions.paintColor}
-                    strokeWidth={gmOptions.paintBrushSize}
-                    opacity={gmOptions.paintColorAlpha}
+                    stroke={paintColor}
+                    strokeWidth={paintBrushSize}
+                    opacity={paintColorAlpha}
                     lineJoin="round"
                     lineCap="round"
-                    globalCompositeOperation={gmOptions.paintMode === "erase" ? "destination-out" : null}
+                    globalCompositeOperation={paintMode === "erase" ? "destination-out" : null}
                 />
             </Group>
         </Layer>

@@ -24,6 +24,10 @@ class MapStore extends EventEmitter {
         this.Store.onDidChange("fow", (newVal, oldValue) => {
             return this.emit("fow.change");
         });
+
+        this.Store.onDidChange("marker", (newVal, oldValue) => {
+            return this.emit("marker.change");
+        });
     }
 
     getMaps() {
@@ -42,9 +46,18 @@ class MapStore extends EventEmitter {
         return this.Store.get("fow." + _id, null);
     }
 
+    getMarker(_id) {
+        return this.Store.get("marker." + _id, null);
+    }
+
     getActiveFow() {
         const map = this.getActive();
         return this.getFow(map._id);
+    }
+
+    getActiveMarker() {
+        const map = this.getActive();
+        return this.getMarker(map._id);
     }
 
     getActive() {
@@ -87,6 +100,10 @@ class MapStore extends EventEmitter {
 
     saveFow(_id, fow) {
         this.Store.set("fow." + _id, fow);
+    }
+
+    saveMarker(_id, fow) {
+        this.Store.set("marker." + _id, fow);
     }
 
     save(values) {
@@ -149,6 +166,16 @@ class MapStore extends EventEmitter {
         return fow;
     }
 
+    useActiveMarker() {
+        const [marker, setMarker] = useState(this.getActiveMarker());
+
+        this.onChangeMarker(() => {
+            setMarker(this.getActiveMarker());
+        });
+
+        return marker;
+    }
+
     useArray() {
         const [maps, setMaps] = useState(this.getMapsArray());
 
@@ -175,6 +202,16 @@ class MapStore extends EventEmitter {
 
             return () => {
                 this.off("fow.change", cb);
+            };
+        });
+    }
+
+    onChangeMarker(cb) {
+        useEffect(() => {
+            this.on("marker.change", cb);
+
+            return () => {
+                this.off("marker.change", cb);
             };
         });
     }

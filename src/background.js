@@ -53,10 +53,6 @@ function initGmWindow() {
     );
 
     mainWindow.setMenu(null);
-
-    if (env.name === "development") {
-        mainWindow.openDevTools();
-    }
 }
 
 function initTvWindow() {
@@ -75,8 +71,4 @@ function initTvWindow() {
             slashes: true,
         }),
     );
-
-    if (env.name === "development") {
-        mainWindow.openDevTools();
-    }
 }
