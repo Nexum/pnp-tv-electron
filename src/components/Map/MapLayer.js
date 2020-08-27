@@ -10,6 +10,10 @@ export default function MapLayer({base}) {
     const [map, setActive] = MapStore.useActive();
 
     useEffect(() => {
+        if (!map) {
+            return;
+        }
+
         Konva.Image.fromURL(MapStore.getMapFilePath(map._id) + "?time=" + Date.now(), function (image) {
             // delete everything
             layer.current.destroyChildren();

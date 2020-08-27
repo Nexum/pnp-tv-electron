@@ -1,11 +1,20 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>GM</title>
+    <meta charset="utf-8">
+    <title>GM</title>
+
+    <script>
+        window.onfocus = function () {
+            document.body.className = 'has-focus';
+        };
+
+        window.onblur = function () {
+            document.body.className = '';
+        };
+    </script>
 </head>
 <body>
-
 <div id="root"></div>
 
 <script src="gm.js"></script>

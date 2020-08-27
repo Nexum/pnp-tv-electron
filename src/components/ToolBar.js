@@ -5,6 +5,7 @@ import MapConfig from "./ToolBar/MapConfig";
 import CreatureConfig from "./ToolBar/CreatureConfig";
 import PaintConfig from "./ToolBar/PaintConfig";
 import ConfigStore from "../lib/ConfigStore";
+import hotkeys from 'hotkeys-js';
 
 export default function ControlPanel({}) {
     const panels = [
@@ -34,6 +35,22 @@ export default function ControlPanel({}) {
         },
     ];
     const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");
+    const gmUiVisible = ConfigStore.useConfig("gmUiVisible");
+
+    function toggleUI() {
+        ConfigStore.set("gmUiVisible", !gmUiVisible);
+    }
+
+    useEffect(() => {
+        hotkeys("f9", (e) => {
+            e.preventDefault();
+            toggleUI();
+        });
+
+        return () => {
+            hotkeys.unbind("f9");
+        };
+    }, [gmUiVisible]);
 
     function togglePanel(panel) {
         if (activeToolbarItem === panel) {
@@ -45,31 +62,43 @@ export default function ControlPanel({}) {
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-                <button className="navbar-toggler" type="button">
-                    <span className="navbar-toggler-icon"/>
-                </button>
-
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav mr-auto">
-                        {
-                            panels.map((v, i) => {
-                                return (
-                                    <li
-                                        ref={v.button}
-                                        key={i}
-                                        className={"nav-item " + (i === activeToolbarItem && "active")}
-                                    >
-                                        <a className="nav-link" href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
-                                    </li>
-                                );
-                            })
-                        }
-                    </ul>
+            <div className="mini-toolbar">
+                <div className="mini-item window-draggable">
+                    &#x2725;
                 </div>
-            </nav>
-            {activeToolbarItem !== null && panels[activeToolbarItem] && (
-                <ConfigWindow panel={panels[activeToolbarItem]}/>
+                <div className={"mini-item window-ui " + (gmUiVisible ? "active" : "inactive")} onClick={toggleUI}>
+                    &#x1F441;
+                </div>
+            </div>
+            {gmUiVisible && (
+                <>
+                    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+                        <button className="navbar-toggler" type="button">
+                            <span className="navbar-toggler-icon"/>
+                        </button>
+
+                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul className="navbar-nav mr-auto">
+                                {
+                                    panels.map((v, i) => {
+                                        return (
+                                            <li
+                                                ref={v.button}
+                                                key={i}
+                                                className={"nav-item " + (i === activeToolbarItem && "active")}
+                                            >
+                                                <a className="nav-link" href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
+                                            </li>
+                                        );
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    </nav>
+                    {activeToolbarItem !== null && panels[activeToolbarItem] && (
+                        <ConfigWindow panel={panels[activeToolbarItem]}/>
+                    )}
+                </>
             )}
         </>
     );

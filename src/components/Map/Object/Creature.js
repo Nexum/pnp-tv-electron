@@ -1,14 +1,20 @@
-import {Group, Text, Rect, Transformer} from "react-konva";
+import {Group, Text, Rect, Transformer, Circle, Wedge} from "react-konva";
 import Konva from "konva";
 import {useEffect, useRef, useState} from "react";
 import Button from "./Button";
+import CreatureStore from "../../../lib/CreatureStore";
+import ConfigStore from "../../../lib/ConfigStore";
 
-export default function Creature({name, width, scale, visible, rotation, _id, height, pos, health, currentHealth, isGm}) {
+export default function Creature({name, scale, map, visible, size, rotation, _id, pos, health, currentHealth, isGm}) {
     const group = useRef();
-    const transformer = useRef();
     const [label, setLabel] = useState();
     const [percentage, setPercentage] = useState(currentHealth / health);
-    const [isSelected, setIsSelected] = useState(false);
+    const sizes = {
+        small: 80,
+        medium: 120,
+        large: 150,
+    };
+    const width = sizes[size];
 
     useEffect(() => {
         setPercentage(Math.round((currentHealth / health) * 100));
@@ -18,28 +24,20 @@ export default function Creature({name, width, scale, visible, rotation, _id, he
         setLabel(`${name}`);
     }, [name, percentage]);
 
-    useEffect(() => {
-        if (isSelected) {
-            transformer.current.setNode(group.current);
-            transformer.current.getLayer().batchDraw();
-        }
-    }, [isSelected]);
-
     async function saveCreature(data, e) {
         if (e) {
             e.cancelBubble = true;
         }
 
-        await fetch(`/api/creature/${_id}/save`, {
-            method: "POST",
-            body: JSON.stringify(data),
+        CreatureStore.save({
+            ...data,
+            map,
+            _id,
         });
     }
 
     async function deleteCreature() {
-        await fetch(`/api/creature/${_id}/delete`, {
-            method: "POST",
-        });
+        CreatureStore.delete(map, _id);
     }
 
     function onDragStart() {
@@ -55,123 +53,62 @@ export default function Creature({name, width, scale, visible, rotation, _id, he
         });
     }
 
-    function onTransformEnd(e) {
-        saveCreature({
-            pos: {
-                x: e.target.x(),
-                y: e.target.y(),
-            },
-            scale: {
-                x: e.target.scaleX(),
-                y: e.target.scaleY(),
-            },
-            rotation: e.target.rotation(),
-        });
-    }
-
     function toggleSelected() {
         if (!isGm) {
             return;
         }
 
-        setIsSelected(!isSelected);
+        ConfigStore.set("selectedCreature", {
+            map: map,
+            _id: _id,
+        });
     }
 
+    const groupHeight = group && group.current && group.current.height();
+    const groupWidth = group && group.current && group.current.width();
+
     return (
-        <>
-            <Group
-                ref={group}
-                x={pos.x}
-                y={pos.y}
-                scaleX={scale.x}
-                scaleY={scale.y}
-                rotation={rotation}
-                draggable={isGm}
-                onTransformEnd={onTransformEnd}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onClick={toggleSelected}
-                width={width}
-                height={height}
+        <Group
+            ref={group}
+            x={pos.x}
+            y={pos.y}
+            scaleX={scale.x}
+            scaleY={scale.y}
+            width={width}
+            height={width}
+            rotation={rotation}
+            draggable={isGm}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onClick={toggleSelected}
+        >
+            <Wedge
+                radius={(width / 2) + 8}
+                fill={"#8a0303"}
+                angle={360 * (percentage / 100)}
             >
-                <Rect
-                    width={width + 4}
-                    height={height + 4}
-                    cornerRadius={3}
-                    fill={"#240000"}
-                >
-                </Rect>
+            </Wedge>
 
-                <Rect
-                    width={width * (percentage / 100)}
-                    height={height}
-                    x={2}
-                    y={2}
-                    cornerRadius={3}
-                    fill={"#8a0303"}>
-                </Rect>
+            <Circle
+                radius={(width / 2)}
+                x={0}
+                y={0}
+                fill={"#240000"}
+            >
+            </Circle>
 
-                <Text
-                    text={label}
-                    fill={"#d6d6d6"}
-                    padding={12}
-                    fontStyle={"bold"}
-                />
-
-                <Text
-                    text={percentage + "%"}
-                    fill={"#d6d6d6"}
-                    padding={12}
-                    x={width - 50}
-                    fontStyle={"bold"}
-                />
-
-                {isGm && <Text
-                    text="👁"
-                    fontSize={36}
-                    x={width + 5}
-                    fill={visible ? "#a5ff6c" : "#FF0000"}
-                    onClick={saveCreature.bind(null, {
-                        visible: !visible,
-                    })}
-                />}
-
-                {isSelected && <Button
-                    color={"#650e0e"}
-                    textColor={"#FFFFFF"}
-                    x={0}
-                    y={group.current.height() + 5}
-                    label={"Hit"}
-                    onClick={saveCreature.bind(null, {
-                        currentHealth: currentHealth - 1,
-                    })}
-                />}
-
-                {isSelected && <Button
-                    color={"#a5ff6c"}
-                    x={40}
-                    y={group.current.height() + 5}
-                    label={"Heal"}
-                    onClick={saveCreature.bind(null, {
-                        currentHealth: currentHealth + 1,
-                    })}
-                />}
-
-                {isSelected && <Button
-                    color={"#a5ff6c"}
-                    x={89}
-                    y={group.current.height() + 5}
-                    label={"Delete"}
-                    onClick={deleteCreature}
-                />}
-            </Group>
-
-            {isSelected && (
-                <Transformer
-                    ref={transformer}
-                />
-            )}
-        </>
+            <Text
+                text={label + "\n" + percentage + "%"}
+                fill={"#d6d6d6"}
+                width={width}
+                height={width}
+                x={(groupWidth / 2) * -1}
+                y={30}
+                align={"center"}
+                verticalAlign={"middle"}
+                fontStyle={"bold"}
+            />
+        </Group>
     );
 
 }

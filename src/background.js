@@ -33,7 +33,7 @@ const defaultWindowOptions = {
     webPreferences: {
         nodeIntegration: true,
     },
-    frame: true,
+    frame: false,
 };
 
 

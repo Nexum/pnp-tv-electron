@@ -18,6 +18,7 @@ class ConfigStore extends EventEmitter {
         });
 
         this.Store.onDidChange("config", (newVal, oldValue) => {
+            console.log("config CHANGE");
             return this.emit("config.change");
         });
     }
@@ -38,7 +39,7 @@ class ConfigStore extends EventEmitter {
             return () => {
                 this.off("config.change", cb);
             };
-        });
+        }, [cb]);
     }
 
     useConfig(path) {

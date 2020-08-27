@@ -18,15 +18,18 @@ class MapStore extends EventEmitter {
         });
 
         this.Store.onDidChange("maps", (newVal, oldValue) => {
+            console.log("maps CHANGE");
             return this.emit("maps.change");
         });
 
         this.Store.onDidChange("fow", (newVal, oldValue) => {
-            return this.emit("fow.change");
+            console.log("fow CHANGE");
+            return this.emit("maps.change");
         });
 
         this.Store.onDidChange("marker", (newVal, oldValue) => {
-            return this.emit("marker.change");
+            console.log("marker CHANGE");
+            return this.emit("maps.change");
         });
     }
 
@@ -86,6 +89,8 @@ class MapStore extends EventEmitter {
         maps[_id].active = true;
 
         this.Store.set("maps", maps);
+        this.emit("fow.change");
+        this.emit("marker.change");
     }
 
     delete(_id) {
@@ -120,15 +125,14 @@ class MapStore extends EventEmitter {
 
         if (!maps[values._id]) {
             maps[values._id] = values;
-
-            this.Store.set("maps", maps);
         } else {
             for (let path in values) {
-                this.Store.set("maps." + values._id + "." + path, values[path]);
+                maps[values._id][path] = values[path];
             }
         }
 
-        return this.getMap(values._id);
+        this.Store.set("maps", maps);
+        return;
     }
 
     getMapFilePath(_id) {
@@ -193,27 +197,15 @@ class MapStore extends EventEmitter {
             return () => {
                 this.off("maps.change", cb);
             };
-        });
+        }, [cb]);
     }
 
     onChangeFow(cb) {
-        useEffect(() => {
-            this.on("fow.change", cb);
-
-            return () => {
-                this.off("fow.change", cb);
-            };
-        });
+        return this.onChange(cb);
     }
 
     onChangeMarker(cb) {
-        useEffect(() => {
-            this.on("marker.change", cb);
-
-            return () => {
-                this.off("marker.change", cb);
-            };
-        });
+        return this.onChange(cb);
     }
 
 }

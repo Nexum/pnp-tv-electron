@@ -19,6 +19,7 @@ export default function FowLayer({isGm, base}) {
     const paintMode = ConfigStore.useConfig("paintMode");
 
     useEffect(() => {
+        console.log("FowLayer.js:21 / MARKER CHANGED");
         if (group.current) {
             if (marker.current) {
                 marker.current.destroy();

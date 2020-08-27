@@ -38,9 +38,11 @@ export default function FowLayer({isGm, base}) {
                     globalCompositeOperation: "destination-out",
                 });
 
-                newImage.cache();
-                newImage.filters([Konva.Filters.Blur]);
-                newImage.blurRadius(50);
+                if (!isGm) {
+                    newImage.cache();
+                    newImage.filters([Konva.Filters.Blur]);
+                    newImage.blurRadius(50);
+                }
 
                 fow.current = newImage;
                 group.current.add(newImage);

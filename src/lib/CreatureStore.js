@@ -5,6 +5,8 @@ import {useEffect, useState} from "react";
 import fs from "fs-jetpack";
 import path from "path";
 import {remote} from "electron";
+import MapStore from "./MapStore";
+import ConfigStore from "./ConfigStore";
 
 const {app} = remote;
 
@@ -22,14 +24,22 @@ class CreatureStore extends EventEmitter {
         });
     }
 
-    getAll() {
-        const creatures = this.Store.get("creatures");
-
-        return Object.keys(creatures).map(v => creatures[v]);
+    get(mapId, id) {
+        if (id) {
+            return this.Store.get("creatures." + mapId + "." + id);
+        } else {
+            const creatures = this.Store.get("creatures." + mapId);
+            if (!creatures) {
+                return [];
+            }
+            return Object.keys(creatures).map(v => creatures[v]);
+        }
     }
 
-    get(_id) {
-        return this.Store.get("creatures." + _id);
+    delete(map, _id) {
+        const creatures = this.Store.get("creatures." + map, {});
+        delete creatures[_id];
+        this.Store.set("creatures." + map, creatures);
     }
 
     save(values) {
@@ -37,17 +47,18 @@ class CreatureStore extends EventEmitter {
             values._id = (new ObjectID()).toHexString();
         }
 
-        const existing = this.get(_id);
+        let existing = this.get(values.map, values._id);
 
         if (!existing) {
-            this.Store.set("creatures." + _id, values);
+            this.Store.set("creatures." + values.map + "." + values._id, values);
         } else {
             for (let path in values) {
-                this.Store.set("creatures." + values._id + "." + path, values[path]);
+                existing[path] = values[path];
             }
-        }
 
-        return this.get(values._id);
+            console.log("CreatureStore.js:59 / save", values, existing);
+            this.Store.set("creatures." + values.map + "." + values._id, existing);
+        }
     }
 
 
@@ -58,14 +69,22 @@ class CreatureStore extends EventEmitter {
             return () => {
                 this.off("creatures.change", cb);
             };
-        });
+        }, [cb]);
     }
 
-    useCreatures(path) {
-        const [val, setValue] = useState(this.get(path));
+    useActiveCreatures() {
+        const map = MapStore.getActive();
+        const [val, setValue] = useState(this.get(map._id));
 
         this.onChange(() => {
-            setValue(this.get(path));
+            const map = MapStore.getActive();
+            setValue(this.get(map._id));
+        });
+
+        MapStore.onChange(() => {
+            ConfigStore.set("selectedCreature", null);
+            const map = MapStore.getActive();
+            setValue(this.get(map._id));
         });
 
         return val;

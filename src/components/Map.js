@@ -7,6 +7,7 @@ import MarkerLayer from "./Map/MarkerLayer";
 import {remote} from "electron";
 import {debounce} from "lodash";
 import ConfigStore from "../lib/ConfigStore";
+import CreatureLayer from "./Map/CreatureLayer";
 
 export default function Map({isGm}) {
     const stage = useRef();
@@ -26,22 +27,37 @@ export default function Map({isGm}) {
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
         fow: <FowLayer key="fow" isGm={isGm} base={base}></FowLayer>,
         paint: <MarkerLayer key="marker" isGm={isGm} base={base}></MarkerLayer>,
+        creature: <CreatureLayer key="creature" isGm={isGm} base={base}></CreatureLayer>,
     };
 
     let layerOrder = [
         "background",
         "map",
         "paint",
+        "creature",
         "fow",
     ];
 
-    if(activeToolbarItem === 1) {
-        layerOrder = [
-            "background",
-            "map",
-            "fow",
-            "paint",
-        ];
+    if (isGm) {
+        if (activeToolbarItem === 1) {
+            layerOrder = [
+                "background",
+                "map",
+                "creature",
+                "fow",
+                "paint",
+            ];
+        }
+
+        if (activeToolbarItem === 3) {
+            layerOrder = [
+                "background",
+                "map",
+                "paint",
+                "fow",
+                "creature",
+            ];
+        }
     }
 
     let currentWindow = remote.getCurrentWindow().removeAllListeners();
