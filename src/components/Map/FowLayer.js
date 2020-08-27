@@ -15,7 +15,8 @@ export default function FowLayer({isGm, base}) {
         fowMode: "remove",
         fowBrushSize: 120,
     };
-    const [map, setActive] = MapStore.useActive();
+    const [map, setActiveMap] = MapStore.useActive();
+    const fowData = MapStore.useActiveFow();
 
     useEffect(() => {
         if (group.current) {
@@ -23,13 +24,13 @@ export default function FowLayer({isGm, base}) {
                 fow.current.destroy();
             }
 
-            if (!map.fow) {
+            if (!fowData) {
                 layer.current.batchDraw();
                 return;
             }
 
             const imageObj = document.createElement("img");
-            imageObj.src = map.fow;
+            imageObj.src = fowData;
             imageObj.onload = function () {
                 const newImage = new Konva.Image({
                     image: imageObj,
@@ -50,7 +51,7 @@ export default function FowLayer({isGm, base}) {
                 layer.current.batchDraw();
             };
         }
-    }, [map]);
+    }, [fowData]);
 
     useEffect(() => {
         Konva.Image.fromURL(`img/fow_base_2.jpg`, function (image) {
@@ -71,10 +72,7 @@ export default function FowLayer({isGm, base}) {
             return;
         }
 
-        MapStore.save({
-            _id: map._id,
-            fow: data,
-        });
+        MapStore.saveFow(map._id, data);
     }
 
     function onMouseDown(e) {

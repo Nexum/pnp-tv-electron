@@ -8,10 +8,7 @@ export default function ResetButton({map}) {
     }
 
     async function resetFow() {
-        MapStore.save({
-            _id: map._id,
-            fow: null,
-        });
+        MapStore.saveFow(map._id, null);
     }
 
     return (

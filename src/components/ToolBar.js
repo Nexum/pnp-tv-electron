@@ -43,7 +43,7 @@ export default function ControlPanel({}) {
     }
 
     useEffect(() => {
-        togglePanel(2);
+        //togglePanel(2);
     }, []);
 
     return (

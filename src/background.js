@@ -33,7 +33,7 @@ const defaultWindowOptions = {
     webPreferences: {
         nodeIntegration: true,
     },
-    frame: true
+    frame: true,
 };
 
 
@@ -52,6 +52,8 @@ function initGmWindow() {
         }),
     );
 
+    mainWindow.setMenu(null);
+
     if (env.name === "development") {
         mainWindow.openDevTools();
     }
@@ -63,6 +65,8 @@ function initTvWindow() {
         width: 1280,
         height: 720,
     });
+
+    mainWindow.setMenu(null);
 
     mainWindow.loadURL(
         url.format({

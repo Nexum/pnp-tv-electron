@@ -18,7 +18,11 @@ class MapStore extends EventEmitter {
         });
 
         this.Store.onDidChange("maps", (newVal, oldValue) => {
-            return this.emit("change");
+            return this.emit("maps.change");
+        });
+
+        this.Store.onDidChange("fow", (newVal, oldValue) => {
+            return this.emit("fow.change");
         });
     }
 
@@ -32,6 +36,15 @@ class MapStore extends EventEmitter {
 
     getMap(_id) {
         return this.Store.get("maps." + _id, null);
+    }
+
+    getFow(_id) {
+        return this.Store.get("fow." + _id, null);
+    }
+
+    getActiveFow() {
+        const map = this.getActive();
+        return this.getFow(map._id);
     }
 
     getActive() {
@@ -72,6 +85,10 @@ class MapStore extends EventEmitter {
         }
     }
 
+    saveFow(_id, fow) {
+        this.Store.set("fow." + _id, fow);
+    }
+
     save(values) {
         if (!values._id) {
             values._id = (new ObjectID()).toHexString();
@@ -106,6 +123,10 @@ class MapStore extends EventEmitter {
         fs.copy(srcFilePath, targetFilePath, {
             overwrite: true,
         });
+        this.save({
+            _id: _id,
+            fileUpdatedAt: new Date(),
+        });
     }
 
     useActive() {
@@ -116,6 +137,16 @@ class MapStore extends EventEmitter {
         });
 
         return [map, this.setActive.bind(this)];
+    }
+
+    useActiveFow() {
+        const [fow, setFow] = useState(this.getActiveFow());
+
+        this.onChangeFow(() => {
+            setFow(this.getActiveFow());
+        });
+
+        return fow;
     }
 
     useArray() {
@@ -130,10 +161,20 @@ class MapStore extends EventEmitter {
 
     onChange(cb) {
         useEffect(() => {
-            this.on("change", cb);
+            this.on("maps.change", cb);
 
             return () => {
-                this.off("change", cb);
+                this.off("maps.change", cb);
+            };
+        });
+    }
+
+    onChangeFow(cb) {
+        useEffect(() => {
+            this.on("fow.change", cb);
+
+            return () => {
+                this.off("fow.change", cb);
             };
         });
     }

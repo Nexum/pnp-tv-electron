@@ -5,6 +5,6 @@ import React from "react";
 global.React = React;
 
 ReactDOM.render(
-  <Screen isGm={true}/>,
-  document.getElementById('root'),
+    <Screen isGm={true}/>,
+    document.getElementById('root'),
 );
