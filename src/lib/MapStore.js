@@ -18,17 +18,14 @@ class MapStore extends EventEmitter {
         });
 
         this.Store.onDidChange("maps", (newVal, oldValue) => {
-            console.log("maps CHANGE");
             return this.emit("maps.change");
         });
 
         this.Store.onDidChange("fow", (newVal, oldValue) => {
-            console.log("fow CHANGE");
             return this.emit("maps.change");
         });
 
         this.Store.onDidChange("marker", (newVal, oldValue) => {
-            console.log("marker CHANGE");
             return this.emit("maps.change");
         });
     }
@@ -55,11 +52,21 @@ class MapStore extends EventEmitter {
 
     getActiveFow() {
         const map = this.getActive();
+
+        if(!map) {
+            return null;
+        }
+
         return this.getFow(map._id);
     }
 
     getActiveMarker() {
         const map = this.getActive();
+
+        if(!map) {
+            return null;
+        }
+
         return this.getMarker(map._id);
     }
 

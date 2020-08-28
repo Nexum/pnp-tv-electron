@@ -14,11 +14,24 @@ class ConfigStore extends EventEmitter {
         super();
 
         this.Store = new ElectronStore({
+            defaults: {
+                config: {
+                    activeToolbarItem: null,
+                    gmUiVisible: true,
+                    fowMode: "remove",
+                    fowBrushSize: 100,
+                    paintColor: "#FF0000",
+                    paintBrushSize: 100,
+                    paintColorAlpha: 0.8,
+                    paintColorRGBA: "#FF0000",
+                    paintMode: "add",
+                    selectedCreature: null,
+                },
+            },
             watch: true,
         });
 
         this.Store.onDidChange("config", (newVal, oldValue) => {
-            console.log("config CHANGE");
             return this.emit("config.change");
         });
     }

@@ -19,8 +19,7 @@ export default function FowLayer({isGm, base}) {
     const paintMode = ConfigStore.useConfig("paintMode");
 
     useEffect(() => {
-        console.log("FowLayer.js:21 / MARKER CHANGED");
-        if (group.current) {
+        if (group.current && map) {
             if (marker.current) {
                 marker.current.destroy();
             }
@@ -48,6 +47,10 @@ export default function FowLayer({isGm, base}) {
             };
         }
     }, [markerData]);
+
+    if (!map) {
+        return null;
+    }
 
     async function save(data) {
         if (!isGm) {

@@ -56,7 +56,6 @@ class CreatureStore extends EventEmitter {
                 existing[path] = values[path];
             }
 
-            console.log("CreatureStore.js:59 / save", values, existing);
             this.Store.set("creatures." + values.map + "." + values._id, existing);
         }
     }
@@ -74,17 +73,17 @@ class CreatureStore extends EventEmitter {
 
     useActiveCreatures() {
         const map = MapStore.getActive();
-        const [val, setValue] = useState(this.get(map._id));
+        const [val, setValue] = useState(map ? this.get(map._id) : []);
 
         this.onChange(() => {
             const map = MapStore.getActive();
-            setValue(this.get(map._id));
+            setValue(map ? this.get(map._id) : []);
         });
 
         MapStore.onChange(() => {
             ConfigStore.set("selectedCreature", null);
             const map = MapStore.getActive();
-            setValue(this.get(map._id));
+            setValue(map ? this.get(map._id) : []);
         });
 
         return val;

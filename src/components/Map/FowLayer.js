@@ -69,7 +69,7 @@ export default function FowLayer({isGm, base}) {
     }, []);
 
     async function save(data) {
-        if (!isGm) {
+        if (!isGm || !map) {
             return;
         }
 

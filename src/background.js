@@ -44,6 +44,9 @@ function initGmWindow() {
         height: 720,
     });
 
+    mainWindow.setMenu(null);
+    //mainWindow.openDevTools();
+
     mainWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, "gm.html"),
@@ -51,8 +54,6 @@ function initGmWindow() {
             slashes: true,
         }),
     );
-
-    mainWindow.setMenu(null);
 }
 
 function initTvWindow() {
@@ -63,6 +64,7 @@ function initTvWindow() {
     });
 
     mainWindow.setMenu(null);
+    //mainWindow.openDevTools();
 
     mainWindow.loadURL(
         url.format({

@@ -18,7 +18,6 @@ export default function BackgroundLayer({isGm, base}) {
     const rect = useRef();
     const [map, setActive] = MapStore.useActive();
 
-
     useEffect(() => {
         const background = map && map.background ? map.background : "grass";
 
