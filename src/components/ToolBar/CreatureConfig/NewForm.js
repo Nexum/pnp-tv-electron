@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import MapStore from "../../../lib/MapStore";
 import CreatureStore from "../../../lib/CreatureStore";
+import CreatureTypeSelect from "./CreatureTypeSelect";
 
 export default function NewForm({}) {
     const [map, setActive] = MapStore.useActive();
@@ -47,6 +48,9 @@ export default function NewForm({}) {
                     <option value="medium">medium</option>
                     <option value="large">large</option>
                 </select>
+            </div>
+            <div className="form-group">
+                <CreatureTypeSelect onChange={onInputChange.bind(null, "imageType")} value={data.imageType}></CreatureTypeSelect>
             </div>
             <div className="form-group d-flex">
                 <button className="btn btn-success flex-fill">Create</button>

@@ -24,7 +24,9 @@ export default function Overview({}) {
                 <tbody>
                 {creatures.map((v, i) => (
                     <tr key={i}>
-                        <td><a className="creature-name" onClick={select.bind(null, v)}>{v.name}</a></td>
+                        <td><a className="creature-name" onClick={select.bind(null, v)}>
+                            <img src={v.imageType} style={{width: 20, height: 20}}/>&nbsp;{v.name}
+                        </a></td>
                         <td>{v.currentHealth} / {v.health}</td>
                         <td>
                             <button className="btn btn-sm btn-danger" onClick={deleteCreature.bind(this, v)}>X</button>

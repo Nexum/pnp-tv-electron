@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import MapStore from "../../../lib/MapStore";
 import CreatureStore from "../../../lib/CreatureStore";
 import ConfigStore from "../../../lib/ConfigStore";
+import CreatureTypeSelect from "./CreatureTypeSelect";
 
 export default function EditForm({}) {
     const selected = ConfigStore.useConfig("selectedCreature");
@@ -19,7 +20,6 @@ export default function EditForm({}) {
         return null;
     }
 
-
     function onInputChange(path, {currentTarget}) {
         setCreature({
             ...creature,
@@ -31,6 +31,7 @@ export default function EditForm({}) {
         CreatureStore.save({
             name: creature.name,
             health: creature.health,
+            imageType: creature.imageType,
             currentHealth: creature.currentHealth,
             size: creature.size,
             map: creature.map,
@@ -42,6 +43,19 @@ export default function EditForm({}) {
         e.preventDefault();
         handeSubmit();
         return false;
+    }
+
+    function toggleVisible() {
+        CreatureStore.save({
+            visible: !creature.visible,
+            map: creature.map,
+            _id: creature._id,
+        });
+
+        setCreature({
+            ...creature,
+            visible: !creature.visible,
+        });
     }
 
     return (
@@ -64,8 +78,12 @@ export default function EditForm({}) {
                     <option value="large">large</option>
                 </select>
             </div>
+            <div className="form-group">
+                <CreatureTypeSelect onChange={onInputChange.bind(null, "imageType")} value={creature.imageType}></CreatureTypeSelect>
+            </div>
             <div className="form-group d-flex">
                 <button className="btn btn-success flex-fill">Save</button>
+                <button type="button" onClick={toggleVisible} className={"btn flex-fill " + (creature.visible ? "btn-primary" : "btn-danger")}>👁</button>
             </div>
         </form>
     );

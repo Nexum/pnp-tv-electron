@@ -5,10 +5,12 @@ import Button from "./Button";
 import CreatureStore from "../../../lib/CreatureStore";
 import ConfigStore from "../../../lib/ConfigStore";
 
-export default function Creature({name, scale, map, visible, size, rotation, _id, pos, health, currentHealth, isGm}) {
+export default function Creature({name, scale, map, visible, size, imageType, rotation, _id, pos, health, currentHealth, isGm}) {
     const group = useRef();
     const [label, setLabel] = useState();
+    const [fillImage, setFillImage] = useState();
     const [percentage, setPercentage] = useState(currentHealth / health);
+    const selectedCreature = ConfigStore.useConfig("selectedCreature");
     const sizes = {
         small: 80,
         medium: 120,
@@ -23,6 +25,20 @@ export default function Creature({name, scale, map, visible, size, rotation, _id
     useEffect(() => {
         setLabel(`${name}`);
     }, [name, percentage]);
+
+    useEffect(() => {
+        if (!imageType) {
+            setFillImage(null);
+            return;
+        }
+
+        const image = new Image();
+        image.onload = function () {
+            setFillImage(image);
+        };
+
+        image.src = imageType;
+    }, [imageType]);
 
     async function saveCreature(data, e) {
         if (e) {
@@ -66,6 +82,12 @@ export default function Creature({name, scale, map, visible, size, rotation, _id
 
     const groupHeight = group && group.current && group.current.height();
     const groupWidth = group && group.current && group.current.width();
+    const patternScale = fillImage ? width / fillImage.width : 1;
+    const isSelected = selectedCreature._id === _id;
+
+    if (!visible && !isGm) {
+        return null;
+    }
 
     return (
         <Group
@@ -86,6 +108,7 @@ export default function Creature({name, scale, map, visible, size, rotation, _id
                 radius={(width / 2) + 8}
                 fill={"#8a0303"}
                 angle={360 * (percentage / 100)}
+                rotationDeg={-90}
             >
             </Wedge>
 
@@ -93,12 +116,18 @@ export default function Creature({name, scale, map, visible, size, rotation, _id
                 radius={(width / 2)}
                 x={0}
                 y={0}
-                fill={"#240000"}
+                fill={fillImage ? null : "#410000"}
+                fillPatternImage={fillImage}
+                fillPatternX={-1 * (width / 2)}
+                fillPatternY={-1 * (width / 2)}
+                fillPatternScale={{x: patternScale, y: patternScale}}
+                fillPatternRepeat="no-repeat"
+                stroke={isSelected ? "#00d8ff" : null}
             >
             </Circle>
 
             <Text
-                text={label + "\n" + percentage + "%"}
+                text={(visible && isGm ? '👁 ' : '') + label + "\n" + percentage + "%"}
                 fill={"#d6d6d6"}
                 width={width}
                 height={width}
