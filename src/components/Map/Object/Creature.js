@@ -83,7 +83,7 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
     const groupHeight = group && group.current && group.current.height();
     const groupWidth = group && group.current && group.current.width();
     const patternScale = fillImage ? width / fillImage.width : 1;
-    const isSelected = selectedCreature._id === _id;
+    const isSelected = selectedCreature && selectedCreature._id === _id;
 
     if (!visible && !isGm) {
         return null;
@@ -109,6 +109,10 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
                 fill={"#8a0303"}
                 angle={360 * (percentage / 100)}
                 rotationDeg={-90}
+                shadowOpacity={0.4}
+                shadowBlur={4}
+                shadowOffset={{x: 3, y: 3}}
+                shadowEnabled={true}
             >
             </Wedge>
 
