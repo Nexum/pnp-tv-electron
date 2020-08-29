@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {Stage, Layer, Rect, Image} from "react-konva";
+import {Stage, Group, Layer, Rect, Image} from "react-konva";
 import Creature from "./Object/Creature";
 import MapStore from "../../lib/MapStore";
 import CreatureStore from "../../lib/CreatureStore";
@@ -9,7 +9,7 @@ export default function CreatureLayer({isGm}) {
     const creatures = CreatureStore.useActiveCreatures();
 
     return (
-        <Layer ref={layer}>
+        <Group ref={layer}>
             {creatures.map((v, i) => <Creature
                 key={i}
                 isGm={isGm}
@@ -19,6 +19,6 @@ export default function CreatureLayer({isGm}) {
                 visible={false}
                 currentHealth={v.health}
                 {...v}/>)}
-        </Layer>
+        </Group>
     );
 }

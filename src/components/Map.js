@@ -25,9 +25,14 @@ export default function Map({isGm}) {
     const layers = {
         background: <BackgroundLayer key="background" isGm={isGm} base={base}></BackgroundLayer>,
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
-        fow: <FowLayer key="fow" isGm={isGm} base={base}></FowLayer>,
+        fow: (
+            <Layer key="fow">
+                <FowLayer isGm={isGm} base={base}></FowLayer>
+                <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
+            </Layer>
+        ),
         paint: <MarkerLayer key="marker" isGm={isGm} base={base}></MarkerLayer>,
-        creature: <CreatureLayer key="creature" isGm={isGm} base={base}></CreatureLayer>,
+        creature: null,
     };
 
     let layerOrder = [

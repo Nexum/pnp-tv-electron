@@ -72,11 +72,7 @@ export default function ControlPanel({}) {
             </div>
             {gmUiVisible && (
                 <>
-                    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-                        <button className="navbar-toggler" type="button">
-                            <span className="navbar-toggler-icon"/>
-                        </button>
-
+                    <nav className="navbar navbar-expand navbar-dark bg-dark fixed-bottom">
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav mr-auto">
                                 {

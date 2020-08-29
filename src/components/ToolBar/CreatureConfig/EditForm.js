@@ -76,6 +76,7 @@ export default function EditForm({}) {
                     <option value="small">small</option>
                     <option value="medium">medium</option>
                     <option value="large">large</option>
+                    <option value="epic">epic</option>
                 </select>
             </div>
             <div className="form-group">

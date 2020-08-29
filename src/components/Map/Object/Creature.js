@@ -12,9 +12,10 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
     const [percentage, setPercentage] = useState(currentHealth / health);
     const selectedCreature = ConfigStore.useConfig("selectedCreature");
     const sizes = {
-        small: 80,
-        medium: 120,
-        large: 150,
+        small: 40,
+        medium: 60,
+        large: 80,
+        epic: 140,
     };
     const width = sizes[size];
 
@@ -107,6 +108,7 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
             <Wedge
                 radius={(width / 2) + 8}
                 fill={"#8a0303"}
+                opacity={0.8}
                 angle={360 * (percentage / 100)}
                 rotationDeg={-90}
                 shadowOpacity={0.4}
@@ -126,7 +128,8 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
                 fillPatternY={-1 * (width / 2)}
                 fillPatternScale={{x: patternScale, y: patternScale}}
                 fillPatternRepeat="no-repeat"
-                stroke={isSelected ? "#00d8ff" : null}
+                strokeWidth={4}
+                stroke={isSelected ? "#00d8ff" : "#000000"}
             >
             </Circle>
 

@@ -7,7 +7,7 @@ import ConfigStore from "../../lib/ConfigStore";
 let painting;
 
 export default function FowLayer({isGm, base}) {
-    const layer = useRef();
+    const layerGroup = useRef();
     const line = useRef();
     const fow = useRef();
     const group = useRef();
@@ -19,12 +19,8 @@ export default function FowLayer({isGm, base}) {
 
     useEffect(() => {
         if (group.current) {
-            if (fow.current) {
-                fow.current.destroy();
-            }
-
             if (!fowData) {
-                layer.current.batchDraw();
+                layerGroup.current.getLayer().batchDraw();
                 return;
             }
 
@@ -33,23 +29,26 @@ export default function FowLayer({isGm, base}) {
             imageObj.onload = function () {
                 const newImage = new Konva.Image({
                     image: imageObj,
-                    width: layer.current.getStage().width(),
-                    height: layer.current.getStage().height(),
+                    width: layerGroup.current.getStage().width(),
+                    height: layerGroup.current.getStage().height(),
                     globalCompositeOperation: "destination-out",
                 });
 
-                if (!isGm) {
-                    newImage.cache();
-                    newImage.filters([Konva.Filters.Blur]);
-                    newImage.blurRadius(50);
+                group.current.add(newImage);
+
+                if (fow.current) {
+                    fow.current.destroy();
                 }
 
+                newImage.cache();
+                newImage.filters([Konva.Filters.Blur]);
+                newImage.blurRadius(50);
+
                 fow.current = newImage;
-                group.current.add(newImage);
                 newImage.moveToTop();
                 line.current.points([]);
                 line.current.moveToTop();
-                layer.current.batchDraw();
+                layerGroup.current.getLayer().batchDraw();
             };
         }
     }, [fowData]);
@@ -62,9 +61,9 @@ export default function FowLayer({isGm, base}) {
             }
             image.filters([Konva.Filters.Grayscale]);
 
-            layer.current.add(image);
+            layerGroup.current.add(image);
             image.moveToBottom();
-            layer.current.batchDraw();
+            layerGroup.current.getLayer().batchDraw();
         });
     }, []);
 
@@ -93,16 +92,16 @@ export default function FowLayer({isGm, base}) {
     }
 
     function getPointerCoords() {
-        if (layer.current) {
-            const pos = layer.current.getStage().getPointerPosition();
+        if (layerGroup.current) {
+            const pos = layerGroup.current.getStage().getPointerPosition();
             let newPoint = [
-                pos.x / layer.current.getStage().scaleX(),
-                pos.y / layer.current.getStage().scaleY(),
+                pos.x / layerGroup.current.getStage().scaleX(),
+                pos.y / layerGroup.current.getStage().scaleY(),
             ];
 
             const halfBrushWidht = parseInt(fowBrushSize) / 2;
-            const edgeX = layer.current.getStage().width() - halfBrushWidht;
-            const edgeY = layer.current.getStage().height() - halfBrushWidht;
+            const edgeX = layerGroup.current.getStage().width() - halfBrushWidht;
+            const edgeY = layerGroup.current.getStage().height() - halfBrushWidht;
 
             if (newPoint[0] > edgeX) {
                 newPoint[0] = edgeX;
@@ -130,7 +129,7 @@ export default function FowLayer({isGm, base}) {
         const newPoints = line.current.points().concat(getPointerCoords());
 
         line.current.points(newPoints);
-        layer.current.batchDraw();
+        layerGroup.current.getLayer().batchDraw();
     }
 
     function onMouseUp(e) {
@@ -160,7 +159,7 @@ export default function FowLayer({isGm, base}) {
     }
 
     return (
-        <Layer ref={layer}
+        <Group ref={layerGroup}
                onMouseDown={onMouseDown}
                onTouchStart={onMouseDown}
                onMouseUp={onMouseUp}
@@ -190,6 +189,6 @@ export default function FowLayer({isGm, base}) {
                     globalCompositeOperation={"destination-out"}
                 />
             </Group>
-        </Layer>
+        </Group>
     );
 }
