@@ -36,7 +36,6 @@ export default function FowLayer({isGm, base}) {
             imageAlreadyLoading = true;
             const imageObj = document.createElement("img");
             imageObj.src = fowData;
-            console.log("FowLayer.js:47 / onload", fowData.length);
             imageObj.onload = function () {
                 imageAlreadyLoading = false;
                 const newImage = new Konva.Image({
@@ -52,12 +51,10 @@ export default function FowLayer({isGm, base}) {
                     fow.current.destroy();
                 }
 
-                console.time("test");
                 newImage.cache();
                 newImage.filters([Konva.Filters.Blur]);
                 newImage.blurRadius(50);
                 newImage.cache();
-                console.timeEnd("test");
 
                 fow.current = newImage;
                 newImage.moveToTop();
