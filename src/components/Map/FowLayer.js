@@ -5,6 +5,7 @@ import MapStore from "../../lib/MapStore";
 import ConfigStore from "../../lib/ConfigStore";
 
 let painting;
+let imageAlreadyLoading = false;
 
 export default function FowLayer({isGm, base}) {
     const layerGroup = useRef();
@@ -20,13 +21,24 @@ export default function FowLayer({isGm, base}) {
     useEffect(() => {
         if (group.current) {
             if (!fowData) {
+                if (fow.current) {
+                    fow.current.destroy();
+                }
+
                 layerGroup.current.getLayer().batchDraw();
                 return;
             }
 
+            if (imageAlreadyLoading) {
+                return;
+            }
+
+            imageAlreadyLoading = true;
             const imageObj = document.createElement("img");
             imageObj.src = fowData;
+            console.log("FowLayer.js:47 / onload", fowData.length);
             imageObj.onload = function () {
+                imageAlreadyLoading = false;
                 const newImage = new Konva.Image({
                     image: imageObj,
                     width: layerGroup.current.getStage().width(),
@@ -40,9 +52,12 @@ export default function FowLayer({isGm, base}) {
                     fow.current.destroy();
                 }
 
+                console.time("test");
                 newImage.cache();
                 newImage.filters([Konva.Filters.Blur]);
                 newImage.blurRadius(50);
+                newImage.cache();
+                console.timeEnd("test");
 
                 fow.current = newImage;
                 newImage.moveToTop();
