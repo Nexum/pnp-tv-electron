@@ -13,17 +13,17 @@ export default function ConfigWindow({map, panel, setGmOptions, gmOptions}) {
 
             setPos({
                 left: box.left,
-                bottom: box.height + 16,
+                top: box.height + 0,
             });
         }
     }, [panel, win, map]);
 
 
     return (
-        <div className="config-window card" ref={win} style={{
+        <div className="config-window" ref={win} style={{
             ...pos,
         }}>
-            <div className="card-body">
+            <div className="config-window-body">
                 {<panel.config map={map} setGmOptions={setGmOptions} gmOptions={gmOptions}/>}
             </div>
         </div>

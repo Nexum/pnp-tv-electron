@@ -21,6 +21,7 @@ export default function ShapeControl({map, setGmOptions, gmOptions}) {
     return (
         <>
             <div className="form-group">
+                <label htmlFor="brush-size">Mode</label>
                 <select className="custom-select" value={fowMode || ""} onChange={onModeChange}>
                     <option value="add">Add Fog</option>
                     <option value="remove">Remove Fog</option>
@@ -28,7 +29,7 @@ export default function ShapeControl({map, setGmOptions, gmOptions}) {
             </div>
             <div className="form-group">
                 <label htmlFor="brush-size">Brush size ({fowBrushSize})</label>
-                <input type="range" className="custom-range" min={40} max={200} name="brush-size" id="brush-size" onChange={onSizeChange}/>
+                <input type="range" className="custom-range" value={fowBrushSize} min={40} max={200} name="brush-size" id="brush-size" onChange={onSizeChange}/>
             </div>
         </>
     );

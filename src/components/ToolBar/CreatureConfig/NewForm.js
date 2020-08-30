@@ -19,13 +19,27 @@ export default function NewForm({}) {
         });
     }
 
+    function getNextName(name) {
+        let parts = name.split(" ");
+        let lastPart = parts.pop();
+
+        if (lastPart.match(/[0-9]+/)) {
+            return parts.join(" ") + " " + (parseInt(lastPart) + 1);
+        }
+
+        return name + " 1";
+    }
+
     async function handeSubmit() {
         CreatureStore.save({
             ...data,
             currentHealth: data.health,
             map: map._id,
         });
-        setData(initialData);
+        setData({
+            ...data,
+            name: getNextName(data.name),
+        });
     }
 
     function onSubmit(e) {
@@ -36,6 +50,7 @@ export default function NewForm({}) {
 
     return (
         <form onSubmit={onSubmit} className="creature-form form p-2 panel mt-2">
+            <h3>Create</h3>
             <div className="form-group">
                 <input type="text" className="form-control" value={data.name} onChange={onInputChange.bind(null, "name")} placeholder="Creature name"/>
             </div>

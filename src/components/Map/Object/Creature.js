@@ -179,11 +179,13 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
                 <Text
                     text={(visible && isGm ? '👁 ' : '') + label + "\n" + (label ? percentage + "%" : "")}
                     fill={"#d6d6d6"}
-                    width={width}
+                    width={900}
                     height={width}
-                    x={(groupWidth / 2) * -1}
+                    listening={false}
+                    x={((groupWidth / 2) * -1) - 430}
                     y={30}
                     align={"center"}
+                    wrap={"none"}
                     verticalAlign={"middle"}
                     fontStyle={"bold"}
                 />

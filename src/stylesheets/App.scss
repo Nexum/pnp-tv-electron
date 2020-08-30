@@ -41,26 +41,114 @@ html, body, .screen {
             cursor: move;
             padding-left: 20px;
             -webkit-app-region: drag;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        a {
+            color: white;
+
+            &:active, &:visited {
+                color: inherit;
+            }
         }
     }
-}
 
-body.has-focus {
-    .mini-toolbar {
-
+    .mini-nav {
+        display: flex;
+        margin: 0;
     }
 }
 
 .config-window {
     position: fixed;
     width: 80vw;
+
+    .config-window-body {
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 10px;
+        margin: 0;
+    }
 }
 
 .creature-table {
     max-height: 50vh;
     overflow-y: scroll;
+    background: white;
+    color: black;
+
+    .creature-row {
+        padding: 4px 4px;
+        display: flex;
+        border-bottom: 1px solid #CECECE;
+
+        &.selected {
+            background-color: #86ffff;
+        }
+    }
 
     .creature-name {
+        flex-grow: 1;
         cursor: pointer;
+        display: flex;
+
+        input {
+            flex-grow: 1;
+            padding: 0 4px;
+        }
     }
+
+    .creature-health {
+        width: 100px;
+        text-align: center;
+    }
+
+    .creature-actions {
+        width: auto;
+    }
+
+    input {
+        background: none;
+        border: none;
+        width: 30px;
+        padding: 0 2px;
+        margin: 0;
+    }
+}
+
+.form-group {
+    display: flex;
+
+    label {
+        width: auto;
+        white-space: nowrap;
+        padding-right: 10px;
+        vertical-align: middle;
+        text-align: left;
+        margin: 0;
+    }
+
+}
+
+.custom-select, .form-control {
+    height: auto;
+    padding: 0 10px 0 10px;
+}
+
+.btn {
+    padding: 0 10px;
+}
+
+.table td, .table th {
+    padding: 4px
+}
+
+.table {
+    padding: 0;
+    margin: 0;
+}
+
+h3 {
+    font-size: 1.15rem;
 }

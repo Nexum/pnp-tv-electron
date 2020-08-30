@@ -63,38 +63,29 @@ export default function ControlPanel({}) {
     return (
         <>
             <div className="mini-toolbar">
-                <div className="mini-item window-draggable">
-                    &#x2725;
-                </div>
                 <div className={"mini-item window-ui " + (gmUiVisible ? "active" : "inactive")} onClick={toggleUI}>
                     &#x1F441;
                 </div>
+                <div className="mini-nav">
+                    {
+                        panels.map((v, i) => {
+                            return (
+                                <div
+                                    ref={v.button}
+                                    key={i}
+                                    className={"mini-item " + (i === activeToolbarItem && "active")}
+                                >
+                                    <a href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
+                                </div>
+                            );
+                        })
+                    }
+                </div>
+                <div className="mini-item window-draggable">
+                </div>
             </div>
-            {gmUiVisible && (
-                <>
-                    <nav className="navbar navbar-expand navbar-dark bg-dark fixed-bottom">
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul className="navbar-nav mr-auto">
-                                {
-                                    panels.map((v, i) => {
-                                        return (
-                                            <li
-                                                ref={v.button}
-                                                key={i}
-                                                className={"nav-item " + (i === activeToolbarItem && "active")}
-                                            >
-                                                <a className="nav-link" href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
-                                            </li>
-                                        );
-                                    })
-                                }
-                            </ul>
-                        </div>
-                    </nav>
-                    {activeToolbarItem !== null && panels[activeToolbarItem] && (
-                        <ConfigWindow panel={panels[activeToolbarItem]}/>
-                    )}
-                </>
+            {gmUiVisible && activeToolbarItem !== null && panels[activeToolbarItem] && (
+                <ConfigWindow panel={panels[activeToolbarItem]}/>
             )}
         </>
     );
