@@ -177,12 +177,12 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
                 </Circle>
 
                 <Text
-                    text={(visible && isGm ? '👁 ' : '') + label + "\n" + (label ? percentage + "%" : "")}
+                    text={label + "\n" + (visible && isGm ? '👁 ' : '')}
                     fill={"#d6d6d6"}
                     width={900}
                     height={width}
                     listening={false}
-                    x={((groupWidth / 2) * -1) - 430}
+                    x={-450}
                     y={30}
                     align={"center"}
                     wrap={"none"}
