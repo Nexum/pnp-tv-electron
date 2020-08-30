@@ -72,6 +72,10 @@ html, body, .screen {
     }
 }
 
+.creature-table-header {
+    padding: 4px 0;
+}
+
 .creature-table {
     max-height: 50vh;
     overflow-y: scroll;
@@ -138,6 +142,7 @@ html, body, .screen {
 
 .btn {
     padding: 0 10px;
+    border-radius: 0;
 }
 
 .table td, .table th {
