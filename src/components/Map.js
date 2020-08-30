@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Stage, Layer, Rect, Image} from "react-konva";
 import MapLayer from "./Map/MapLayer";
-import FowLayer from "./Map/FowLayer";
+import __FowLayer from "./Map/FowLayer";
 import BackgroundLayer from "./Map/BackgroundLayer";
 import MarkerLayer from "./Map/MarkerLayer";
 import {remote} from "electron";
@@ -27,7 +27,7 @@ export default function Map({isGm}) {
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
         fow: (
             <Layer key="fow">
-                <FowLayer isGm={isGm} base={base}></FowLayer>
+                <__FowLayer isGm={isGm} base={base}></__FowLayer>
                 <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
             </Layer>
         ),

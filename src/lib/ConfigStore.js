@@ -41,6 +41,7 @@ class ConfigStore extends EventEmitter {
     }
 
     set(path, value) {
+        console.log("ConfigStore.js:44 / set", path, String(value).length);
         this.Store.set("config." + path, value);
     }
 

@@ -5,7 +5,7 @@ import MapStore from "../../lib/MapStore";
 import ConfigStore from "../../lib/ConfigStore";
 
 let painting;
-let imageAlreadyLoading = false;
+let saving = false;
 
 export default function FowLayer({isGm, base}) {
     const layerGroup = useRef();
@@ -14,13 +14,15 @@ export default function FowLayer({isGm, base}) {
     const group = useRef();
     const fogColor = "#dedede";
     const [map, setActiveMap] = MapStore.useActive();
-    const fowData = MapStore.useActiveFow();
+    const fowListener = MapStore.useActiveFow();
     const fowMode = ConfigStore.useConfig("fowMode");
     const fowBrushSize = ConfigStore.useConfig("fowBrushSize");
 
-    useEffect(() => {
+    async function updateFow() {
         if (group.current) {
-            if (!fowData) {
+            const fowImage = await getImageFromSrc(MapStore.getFowFilePath(map._id) + "?time=" + Date.now());
+
+            if (!fowImage) {
                 if (fow.current) {
                     fow.current.destroy();
                 }
@@ -29,41 +31,35 @@ export default function FowLayer({isGm, base}) {
                 return;
             }
 
-            if (imageAlreadyLoading) {
-                return;
+            const newImage = new Konva.Image({
+                image: fowImage,
+                width: layerGroup.current.getStage().width(),
+                height: layerGroup.current.getStage().height(),
+                globalCompositeOperation: "destination-out",
+            });
+
+            group.current.add(newImage);
+
+            if (fow.current) {
+                fow.current.destroy();
             }
 
-            imageAlreadyLoading = true;
-            const imageObj = document.createElement("img");
-            imageObj.src = fowData;
-            imageObj.onload = function () {
-                imageAlreadyLoading = false;
-                const newImage = new Konva.Image({
-                    image: imageObj,
-                    width: layerGroup.current.getStage().width(),
-                    height: layerGroup.current.getStage().height(),
-                    globalCompositeOperation: "destination-out",
-                });
+            newImage.cache();
+            newImage.filters([Konva.Filters.Blur]);
+            newImage.blurRadius(50);
+            newImage.cache();
 
-                group.current.add(newImage);
-
-                if (fow.current) {
-                    fow.current.destroy();
-                }
-
-                newImage.cache();
-                newImage.filters([Konva.Filters.Blur]);
-                newImage.blurRadius(50);
-                newImage.cache();
-
-                fow.current = newImage;
-                newImage.moveToTop();
-                line.current.points([]);
-                line.current.moveToTop();
-                layerGroup.current.getLayer().batchDraw();
-            };
+            fow.current = newImage;
+            newImage.moveToTop();
+            line.current.points([]);
+            line.current.moveToTop();
+            layerGroup.current.getLayer().batchDraw();
         }
-    }, [fowData]);
+    }
+
+    useEffect(() => {
+        updateFow();
+    }, [fowListener]);
 
     useEffect(() => {
         Konva.Image.fromURL(`img/fow_base_2.jpg`, function (image) {
@@ -79,12 +75,28 @@ export default function FowLayer({isGm, base}) {
         });
     }, []);
 
-    async function save(data) {
-        if (!isGm || !map) {
+    async function getImageFromSrc(src) {
+        return new Promise((res, rej) => {
+            const imageObj = document.createElement("img");
+            imageObj.src = src;
+            imageObj.onload = function () {
+                res(imageObj);
+            };
+            imageObj.onerror = function () {
+                console.log("FowLayer.js:86 / onerror");
+                res(null);
+            };
+        });
+    }
+
+    async function save(dataUrl) {
+        if (!isGm || !map || saving) {
             return;
         }
 
-        MapStore.saveFow(map._id, data);
+        saving = true;
+        MapStore.saveFow(map._id, dataUrl);
+        saving = false;
     }
 
     function onMouseDown(e) {

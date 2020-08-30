@@ -81,7 +81,6 @@ class CreatureStore extends EventEmitter {
         });
 
         MapStore.onChange(() => {
-            ConfigStore.set("selectedCreature", null);
             const map = MapStore.getActive();
             setValue(map ? this.get(map._id) : []);
         });

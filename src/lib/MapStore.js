@@ -20,9 +20,8 @@ class MapStore extends EventEmitter {
         this.Store.onDidChange("maps", (newVal, oldValue) => {
             return this.emit("maps.change");
         });
-
         this.Store.onDidChange("fow", (newVal, oldValue) => {
-            return this.emit("maps.change");
+            return this.emit("fow.change");
         });
 
         this.Store.onDidChange("marker", (newVal, oldValue) => {
@@ -42,28 +41,14 @@ class MapStore extends EventEmitter {
         return this.Store.get("maps." + _id, null);
     }
 
-    getFow(_id) {
-        return this.Store.get("fow." + _id, null);
-    }
-
     getMarker(_id) {
         return this.Store.get("marker." + _id, null);
-    }
-
-    getActiveFow() {
-        const map = this.getActive();
-
-        if(!map) {
-            return null;
-        }
-
-        return this.getFow(map._id);
     }
 
     getActiveMarker() {
         const map = this.getActive();
 
-        if(!map) {
+        if (!map) {
             return null;
         }
 
@@ -110,8 +95,16 @@ class MapStore extends EventEmitter {
         }
     }
 
-    saveFow(_id, fow) {
-        this.Store.set("fow." + _id, fow);
+    saveFow(_id, content) {
+        const targetFilePath = this.getFowFilePath(_id);
+        if (!content) {
+            fs.remove(targetFilePath);
+        } else {
+            const data = content.replace(/^data:image\/\w+;base64,/, "");
+            const buf = new Buffer(data, 'base64');
+            fs.write(targetFilePath, buf);
+        }
+        this.Store.set("fow." + _id, Date.now());
     }
 
     saveMarker(_id, fow) {
@@ -146,6 +139,10 @@ class MapStore extends EventEmitter {
         return path.join(app.getPath("userData"), "maps", _id);
     }
 
+    getFowFilePath(_id) {
+        return path.join(app.getPath("userData"), "maps", "fow_" + _id + ".png");
+    }
+
     saveMapFile(_id, srcFilePath) {
         const targetFilePath = this.getMapFilePath(_id);
         fs.copy(srcFilePath, targetFilePath, {
@@ -168,10 +165,11 @@ class MapStore extends EventEmitter {
     }
 
     useActiveFow() {
-        const [fow, setFow] = useState(this.getActiveFow());
+        const [fow, setFow] = useState(Date.now());
 
         this.onChangeFow(() => {
-            setFow(this.getActiveFow());
+            console.log("MapStore.js:164 / FOW CHANGED");
+            setFow(Date.now());
         });
 
         return fow;
@@ -208,7 +206,13 @@ class MapStore extends EventEmitter {
     }
 
     onChangeFow(cb) {
-        return this.onChange(cb);
+        useEffect(() => {
+            this.on("fow.change", cb);
+
+            return () => {
+                this.off("fow.change", cb);
+            };
+        }, [cb]);
     }
 
     onChangeMarker(cb) {

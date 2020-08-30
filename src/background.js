@@ -18,6 +18,7 @@ import env from "env";
 if (env.name !== "production") {
     const userDataPath = app.getPath("userData");
     app.setPath("userData", `${userDataPath} (${env.name})`);
+    require('electron-reload')(__dirname);
 }
 
 app.on("ready", () => {
