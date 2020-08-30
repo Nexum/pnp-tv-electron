@@ -18,7 +18,9 @@ class MapStore extends EventEmitter {
         });
 
         this.Store.onDidChange("maps", (newVal, oldValue) => {
-            return this.emit("maps.change");
+            this.emit("maps.change");
+            this.emit("fow.change");
+            this.emit("marker.change");
         });
         this.Store.onDidChange("fow", (newVal, oldValue) => {
             return this.emit("fow.change");
@@ -81,8 +83,6 @@ class MapStore extends EventEmitter {
         maps[_id].active = true;
 
         this.Store.set("maps", maps);
-        this.emit("fow.change");
-        this.emit("marker.change");
     }
 
     delete(_id) {
