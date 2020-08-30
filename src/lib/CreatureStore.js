@@ -7,6 +7,7 @@ import path from "path";
 import {remote} from "electron";
 import MapStore from "./MapStore";
 import ConfigStore from "./ConfigStore";
+import GDriveStore from "./GDriveStore";
 
 const {app} = remote;
 
@@ -22,6 +23,10 @@ class CreatureStore extends EventEmitter {
         this.Store.onDidChange("creatures", (newVal, oldValue) => {
             return this.emit("creatures.change");
         });
+    }
+
+    async reloadGDrive() {
+        await GDriveStore.reloadCreatures();
     }
 
     get(mapId, id) {
@@ -51,12 +56,14 @@ class CreatureStore extends EventEmitter {
 
         if (!existing) {
             this.Store.set("creatures." + values.map + "." + values._id, values);
+            return values;
         } else {
             for (let path in values) {
                 existing[path] = values[path];
             }
 
             this.Store.set("creatures." + values.map + "." + values._id, existing);
+            return existing;
         }
     }
 

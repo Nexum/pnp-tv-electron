@@ -7,7 +7,7 @@ import ConfigStore from "../../lib/ConfigStore";
 let painting;
 let saving = false;
 
-export default function FowLayer({isGm, base}) {
+export default function FowLayer({isGm, listening, base}) {
     const layerGroup = useRef();
     const line = useRef();
     const fow = useRef();
@@ -184,6 +184,7 @@ export default function FowLayer({isGm, base}) {
 
     return (
         <Group ref={layerGroup}
+               listening={listening}
                onMouseDown={onMouseDown}
                onTouchStart={onMouseDown}
                onMouseUp={onMouseUp}

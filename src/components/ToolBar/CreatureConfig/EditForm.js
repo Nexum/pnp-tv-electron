@@ -17,35 +17,26 @@ export default function EditForm({}) {
         }
     }, [selected, creatures]);
 
-    if (!creature) {
-        return null;
-    }
 
     function onInputChange(path, {currentTarget}) {
+        let val = typeof currentTarget.checked !== "undefined" ? currentTarget.checked : currentTarget.value;
+
         CreatureStore.save({
             map: creature.map,
             _id: creature._id,
-            [path]: currentTarget.value,
+            [path]: val,
         });
     }
 
-    function toggleVisible() {
-        CreatureStore.save({
-            visible: !creature.visible,
-            map: creature.map,
-            _id: creature._id,
-        });
-
-        setCreature({
-            ...creature,
-            visible: !creature.visible,
-        });
+    if(!creature) {
+        return null;
     }
 
     return (
         <form className="creature-form form p-2 panel mt-2">
             <h3>Edit</h3>
             <div className="form-group">
+                <label>Size</label>
                 <select className="form-control" onChange={onInputChange.bind(null, "size")} value={creature.size}>
                     <option value="small">small</option>
                     <option value="medium">medium</option>
@@ -54,10 +45,19 @@ export default function EditForm({}) {
                 </select>
             </div>
             <div className="form-group">
+                <label>Typ</label>
                 <CreatureTypeSelect onChange={onInputChange.bind(null, "imageType")} value={creature.imageType}></CreatureTypeSelect>
             </div>
-            <div className="form-group d-flex">
-                <button type="button" onClick={toggleVisible} className={"btn flex-fill " + (creature.visible ? "btn-primary" : "btn-danger")}>👁</button>
+            <div className="form-check">
+                <input className="form-check-input"
+                       onChange={onInputChange.bind(null, "visible")}
+                       type="checkbox"
+                       checked={creature ? creature.visible : false}
+                       value={true}
+                       id="visibleCheck"/>
+                <label className="form-check-label" htmlFor="visibleCheck">
+                    Visible
+                </label>
             </div>
         </form>
     );

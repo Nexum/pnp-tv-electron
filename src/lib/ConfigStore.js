@@ -34,6 +34,12 @@ class ConfigStore extends EventEmitter {
         this.Store.onDidChange("config", (newVal, oldValue) => {
             return this.emit("config.change");
         });
+
+        this.onInputChange = this.onInputChange.bind(this);
+    }
+
+    onInputChange(path, e) {
+        this.set(path, e.target.value);
     }
 
     get(path) {
@@ -41,7 +47,7 @@ class ConfigStore extends EventEmitter {
     }
 
     set(path, value) {
-        console.log("ConfigStore.js:44 / set", path, String(value).length);
+        console.log("ConfigStore.js:44 / set", path, value);
         this.Store.set("config." + path, value);
     }
 

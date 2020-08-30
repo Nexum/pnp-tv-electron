@@ -27,7 +27,7 @@ class MapStore extends EventEmitter {
         });
 
         this.Store.onDidChange("marker", (newVal, oldValue) => {
-            return this.emit("maps.change");
+            return this.emit("marker.change");
         });
     }
 
@@ -41,20 +41,6 @@ class MapStore extends EventEmitter {
 
     getMap(_id) {
         return this.Store.get("maps." + _id, null);
-    }
-
-    getMarker(_id) {
-        return this.Store.get("marker." + _id, null);
-    }
-
-    getActiveMarker() {
-        const map = this.getActive();
-
-        if (!map) {
-            return null;
-        }
-
-        return this.getMarker(map._id);
     }
 
     getActive() {
@@ -107,8 +93,16 @@ class MapStore extends EventEmitter {
         this.Store.set("fow." + _id, Date.now());
     }
 
-    saveMarker(_id, fow) {
-        this.Store.set("marker." + _id, fow);
+    saveMarker(_id, content) {
+        const targetFilePath = this.getMarkerFilePath(_id);
+        if (!content) {
+            fs.remove(targetFilePath);
+        } else {
+            const data = content.replace(/^data:image\/\w+;base64,/, "");
+            const buf = new Buffer(data, 'base64');
+            fs.write(targetFilePath, buf);
+        }
+        this.Store.set("marker." + _id, Date.now());
     }
 
     save(values) {
@@ -141,6 +135,10 @@ class MapStore extends EventEmitter {
 
     getFowFilePath(_id) {
         return path.join(app.getPath("userData"), "maps", "fow_" + _id + ".png");
+    }
+
+    getMarkerFilePath(_id) {
+        return path.join(app.getPath("userData"), "maps", "marker_" + _id + ".png");
     }
 
     saveMapFile(_id, srcFilePath) {
@@ -176,10 +174,10 @@ class MapStore extends EventEmitter {
     }
 
     useActiveMarker() {
-        const [marker, setMarker] = useState(this.getActiveMarker());
+        const [marker, setMarker] = useState(Date.now());
 
         this.onChangeMarker(() => {
-            setMarker(this.getActiveMarker());
+            setMarker(Date.now());
         });
 
         return marker;
@@ -216,7 +214,13 @@ class MapStore extends EventEmitter {
     }
 
     onChangeMarker(cb) {
-        return this.onChange(cb);
+        useEffect(() => {
+            this.on("marker.change", cb);
+
+            return () => {
+                this.off("marker.change", cb);
+            };
+        }, [cb]);
     }
 
 }

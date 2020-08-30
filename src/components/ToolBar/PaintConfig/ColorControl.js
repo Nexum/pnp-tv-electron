@@ -7,15 +7,15 @@ export default function ColorControl({map, gmOptions, setGmOptions}) {
         return null;
     }
 
-    const paintColorRBGA = ConfigStore.useConfig("paintColorRGBA");
+    const markerColorRBGA = ConfigStore.useConfig("markerColorRGBA");
 
     function onChange(data) {
-        ConfigStore.set("paintColor", data.hex);
-        ConfigStore.set("paintColorRGBA", data.rgb);
-        ConfigStore.set("paintColorAlpha", data.rgb.a);
+        ConfigStore.set("markerColor", data.hex);
+        ConfigStore.set("markerColorRGBA", data.rgb);
+        ConfigStore.set("markerColorAlpha", data.rgb.a);
     }
 
     return (
-        <SketchPicker onChange={onChange} color={paintColorRBGA}/>
+        <SketchPicker onChange={onChange} color={markerColorRBGA}/>
     );
 }

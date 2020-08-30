@@ -7,6 +7,7 @@ export default function Overview({}) {
     const selected = ConfigStore.useConfig("selectedCreature");
     const [map, setActiveMap] = MapStore.useActive();
     const creatures = CreatureStore.useActiveCreatures();
+    const creatureConfigs = ConfigStore.useConfig("gdrive.creatures");
 
     function select(creature) {
         const {_id} = creature;
@@ -48,12 +49,17 @@ export default function Overview({}) {
     }
 
     function createNew() {
-        CreatureStore.save({
+        const selectedData = selected ? creatures.find((v => v._id === selected._id)) : null;
+        const newCreature = CreatureStore.save({
             map: map._id,
-            name: selected ? getNextName(selected.name) : "",
-            health: selected ? selected.health : 0,
-            currentHealth: selected ? selected.health : 0,
+            name: selectedData ? getNextName(selectedData.name) : "",
+            health: selectedData ? selectedData.health : 0,
+            currentHealth: selectedData ? selectedData.health : 0,
+            size: selectedData ? selectedData.size : "small",
+            imageType: selectedData ? selectedData.imageType : null,
         });
+
+        select(newCreature);
     }
 
     return (
@@ -64,36 +70,44 @@ export default function Overview({}) {
             </div>
             <div className="creature-table">
                 <div className="d-flex flex-column">
-                    {creatures.map((v, i) => (
-                        <div key={i} className={"d-flex creature-row " + (selected._id === v._id ? "selected" : "")}>
-                            <div className="creature-name" onClick={select.bind(null, v)}>
-                                <img src={v.imageType} style={{width: 20, height: 20}}/>
-                                <input type="text" value={v.name} onChange={onInputChange.bind(null, v, "name")}/>
+                    {creatures.map((v, i) => {
+
+                        let imgSrc = null;
+                        if (creatureConfigs[v.imageType]) {
+                            imgSrc = creatureConfigs[v.imageType].image;
+                        }
+
+                        return (
+                            <div key={i} className={"d-flex creature-row " + (selected._id === v._id ? "selected" : "")}>
+                                <div className="creature-name" onClick={select.bind(null, v)}>
+                                    {imgSrc && <img src={imgSrc} style={{width: 20, height: 20}}/>}
+                                    <input type="text" value={v.name} onChange={onInputChange.bind(null, v, "name")}/>
+                                </div>
+
+
+                                <div className="creature-health">
+                                    <input type="text" value={v.currentHealth} onChange={onInputChange.bind(null, v, "currentHealth")}/>
+                                    /
+                                    <input type="text" value={v.health} onChange={onInputChange.bind(null, v, "health")}/>
+                                </div>
+
+
+                                <div className="creature-actions">
+                                    <button
+                                        type="button"
+                                        onClick={toggleVisible.bind(null, v)}
+                                        className={"btn btn-sm " + (v.visible ? "btn-primary" : "btn-danger")}>
+                                        👁
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger"
+                                        onClick={deleteCreature.bind(this, v)}>
+                                        X
+                                    </button>
+                                </div>
                             </div>
-
-
-                            <div className="creature-health">
-                                <input type="text" value={v.currentHealth} onChange={onInputChange.bind(null, v, "currentHealth")}/>
-                                /
-                                <input type="text" value={v.health} onChange={onInputChange.bind(null, v, "health")}/>
-                            </div>
-
-
-                            <div className="creature-actions">
-                                <button
-                                    type="button"
-                                    onClick={toggleVisible.bind(null, v)}
-                                    className={"btn btn-sm " + (v.visible ? "btn-primary" : "btn-danger")}>
-                                    👁
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger"
-                                    onClick={deleteCreature.bind(this, v)}>
-                                    X
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </>

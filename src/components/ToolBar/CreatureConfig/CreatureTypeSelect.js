@@ -1,26 +1,14 @@
-import fs from "fs-jetpack";
-import {remote} from "electron";
-import path from "path";
-
-const app = remote.app;
-const files = fs.list(path.join(app.getAppPath(), "app", "creatures"));
-const options = [];
-
-for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-
-    options.push({
-        label: file.split(".").shift(),
-        value: "creatures/" + file,
-    });
-}
+import ConfigStore from "../../../lib/ConfigStore";
 
 export default function CreatureTypeSelect({onChange, value}) {
+    const creatureConfigs = ConfigStore.useConfig("gdrive.creatures");
+
     return (
         <select className="form-control" onChange={onChange} value={value}>
             <option>Select</option>
-            {options.map((v, i) => {
-                return <option value={v.value} key={i}>{v.label}</option>;
+            {Object.keys(creatureConfigs).map((id) => {
+                const creature = creatureConfigs[id];
+                return <option value={id} key={id}>{creature.name}</option>;
             })}
         </select>
     );

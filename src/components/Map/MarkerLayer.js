@@ -1,63 +1,73 @@
 import {useEffect, useRef, useState} from "react";
 import {Group, Layer, Line, Rect} from "react-konva";
 import Konva from "konva";
-import ConfigStore from "../../lib/ConfigStore";
 import MapStore from "../../lib/MapStore";
+import ConfigStore from "../../lib/ConfigStore";
+import {layer} from "@fortawesome/fontawesome-svg-core";
 
 let painting;
+let saving = false;
 
-export default function FowLayer({isGm, base}) {
-    const layer = useRef();
+export default function MarkerLayer({isGm, listening, base}) {
+    const layerGroup = useRef();
     const line = useRef();
     const marker = useRef();
-    const group = useRef();
     const [map, setActiveMap] = MapStore.useActive();
-    const markerData = MapStore.useActiveMarker();
-    const paintColor = ConfigStore.useConfig("paintColor");
-    const paintBrushSize = ConfigStore.useConfig("paintBrushSize");
-    const paintColorAlpha = ConfigStore.useConfig("paintColorAlpha");
-    const paintMode = ConfigStore.useConfig("paintMode");
+    const markerListener = MapStore.useActiveMarker();
+    const markerMode = ConfigStore.useConfig("markerMode");
+    const markerColor = ConfigStore.useConfig("markerColor");
+    const markerColorAlpha = ConfigStore.useConfig("markerColorAlpha");
+    const markerBrushSize = ConfigStore.useConfig("markerBrushSize");
 
-    useEffect(() => {
-        if (group.current && map) {
+    async function updateMarker() {
+        if (layerGroup.current) {
+            const markerImage = await getImageFromSrc(MapStore.getMarkerFilePath(map._id) + "?time=" + Date.now());
+            const newImage = new Konva.Image({
+                image: markerImage,
+                width: layerGroup.current.getStage().width(),
+                height: layerGroup.current.getStage().height(),
+            });
+
+            layerGroup.current.add(newImage);
+
             if (marker.current) {
                 marker.current.destroy();
             }
 
-            if (!markerData) {
-                layer.current.batchDraw();
-                return;
-            }
-
-            const imageObj = document.createElement("img");
-            imageObj.src = markerData;
-            imageObj.onload = function () {
-                const newImage = new Konva.Image({
-                    image: imageObj,
-                    width: layer.current.getStage().width(),
-                    height: layer.current.getStage().height(),
-                });
-
-                marker.current = newImage;
-                group.current.add(newImage);
-                newImage.moveToTop();
-                line.current.points([]);
-                line.current.moveToTop();
-                layer.current.batchDraw();
-            };
+            marker.current = newImage;
+            newImage.moveToTop();
+            line.current.points([]);
+            line.current.moveToTop();
+            layerGroup.current.getLayer().batchDraw();
         }
-    }, [markerData]);
-
-    if (!map) {
-        return null;
     }
 
-    async function save(data) {
-        if (!isGm) {
+    useEffect(() => {
+        updateMarker();
+    }, [markerListener]);
+
+    async function getImageFromSrc(src) {
+        return new Promise((res, rej) => {
+            const imageObj = document.createElement("img");
+            imageObj.src = src;
+            imageObj.onload = function () {
+                res(imageObj);
+            };
+            imageObj.onerror = function () {
+                console.log("MarkerLayer.js:86 / onerror");
+                res(null);
+            };
+        });
+    }
+
+    async function save(dataUrl) {
+        if (!isGm || !map || saving) {
             return;
         }
 
-        MapStore.saveMarker(map._id, data);
+        saving = true;
+        MapStore.saveMarker(map._id, dataUrl);
+        saving = false;
     }
 
     function onMouseDown(e) {
@@ -66,20 +76,27 @@ export default function FowLayer({isGm, base}) {
         }
 
         line.current.points(getPointerCoords());
+
+        if (markerMode === "remove") {
+            line.current.globalCompositeOperation("destination-out");
+        } else {
+            line.current.globalCompositeOperation(null);
+        }
+
         painting = true;
     }
 
     function getPointerCoords() {
-        if (layer.current) {
-            const pos = layer.current.getStage().getPointerPosition();
+        if (layerGroup.current) {
+            const pos = layerGroup.current.getStage().getPointerPosition();
             let newPoint = [
-                pos.x / layer.current.getStage().scaleX(),
-                pos.y / layer.current.getStage().scaleY(),
+                pos.x / layerGroup.current.getStage().scaleX(),
+                pos.y / layerGroup.current.getStage().scaleY(),
             ];
 
-            const halfBrushWidht = paintBrushSize / 2;
-            const edgeX = layer.current.getStage().width() - halfBrushWidht;
-            const edgeY = layer.current.getStage().height() - halfBrushWidht;
+            const halfBrushWidht = parseInt(markerBrushSize) / 2;
+            const edgeX = layerGroup.current.getStage().width() - halfBrushWidht;
+            const edgeY = layerGroup.current.getStage().height() - halfBrushWidht;
 
             if (newPoint[0] > edgeX) {
                 newPoint[0] = edgeX;
@@ -107,7 +124,7 @@ export default function FowLayer({isGm, base}) {
         const newPoints = line.current.points().concat(getPointerCoords());
 
         line.current.points(newPoints);
-        layer.current.batchDraw();
+        layerGroup.current.getLayer().batchDraw();
     }
 
     function onMouseUp(e) {
@@ -116,11 +133,12 @@ export default function FowLayer({isGm, base}) {
         }
 
         painting = false;
-        save(group.current.toDataURL());
+        save(layerGroup.current.toDataURL());
     }
 
     return (
-        <Layer ref={layer}
+        <Group ref={layerGroup}
+               listening={listening}
                onMouseDown={onMouseDown}
                onTouchStart={onMouseDown}
                onMouseUp={onMouseUp}
@@ -128,28 +146,22 @@ export default function FowLayer({isGm, base}) {
                onMouseLeave={onMouseUp}
                onMouseMove={onMouseMove}
                onTouchMove={onMouseMove}
+               width={base.width}
+               height={base.height}
         >
-            <Group
-                ref={group}
+            <Rect
                 width={base.width}
                 height={base.height}
             >
-                <Rect
-                    width={base.width}
-                    height={base.height}
-                >
-
-                </Rect>
-                <Line
-                    ref={line}
-                    stroke={paintColor}
-                    strokeWidth={paintBrushSize}
-                    opacity={paintColorAlpha}
-                    lineJoin="round"
-                    lineCap="round"
-                    globalCompositeOperation={paintMode === "erase" ? "destination-out" : null}
-                />
-            </Group>
-        </Layer>
+            </Rect>
+            <Line
+                ref={line}
+                stroke={markerColor}
+                strokeWidth={markerBrushSize}
+                opacity={markerColorAlpha}
+                lineJoin="round"
+                lineCap="round"
+            />
+        </Group>
     );
 }

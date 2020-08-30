@@ -6,14 +6,11 @@ import Overview from "./CreatureConfig/Overview";
 export default function CreatureConfig({}) {
     return (
         <div className="row">
-            <div className="col-md-3">
-                <NewForm></NewForm>
+            <div className="col-md-6">
+                <Overview></Overview>
             </div>
             <div className="col-md-3">
                 <EditForm></EditForm>
-            </div>
-            <div className="col-md-6">
-                <Overview></Overview>
             </div>
         </div>
     );

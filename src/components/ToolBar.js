@@ -6,6 +6,7 @@ import CreatureConfig from "./ToolBar/CreatureConfig";
 import PaintConfig from "./ToolBar/PaintConfig";
 import ConfigStore from "../lib/ConfigStore";
 import hotkeys from 'hotkeys-js';
+import GDriveConfig from "./ToolBar/GDriveConfig";
 
 export default function ControlPanel({}) {
     const panels = [
@@ -32,6 +33,12 @@ export default function ControlPanel({}) {
             layer: "creature",
             button: useRef(),
             config: CreatureConfig,
+        },
+        {
+            label: "GDrive",
+            layer: "gdrive",
+            button: useRef(),
+            config: GDriveConfig,
         },
     ];
     const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");

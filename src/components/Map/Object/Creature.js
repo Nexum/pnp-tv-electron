@@ -5,7 +5,7 @@ import Button from "./Button";
 import CreatureStore from "../../../lib/CreatureStore";
 import ConfigStore from "../../../lib/ConfigStore";
 
-export default function Creature({name, scale, map, visible, size, imageType, rotation, _id, pos, health, currentHealth, isGm}) {
+export default function Creature({name, scale, map, visible, size, remoteConfig, rotation, _id, pos, health, currentHealth, isGm}) {
     const group = useRef();
     const dragLine = useRef();
     const [label, setLabel] = useState();
@@ -31,7 +31,7 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
     }, [name, percentage]);
 
     useEffect(() => {
-        if (!imageType) {
+        if (!remoteConfig) {
             setFillImage(null);
             return;
         }
@@ -41,8 +41,8 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
             setFillImage(image);
         };
 
-        image.src = imageType;
-    }, [imageType]);
+        image.src = remoteConfig.image;
+    }, [remoteConfig]);
 
     async function saveCreature(data, e) {
         if (e) {
@@ -177,13 +177,26 @@ export default function Creature({name, scale, map, visible, size, imageType, ro
                 </Circle>
 
                 <Text
-                    text={label + "\n" + (visible && isGm ? '👁 ' : '')}
+                    text={label}
                     fill={"#d6d6d6"}
                     width={900}
                     height={width}
                     listening={false}
                     x={-450}
-                    y={30}
+                    y={25}
+                    align={"center"}
+                    wrap={"none"}
+                    verticalAlign={"middle"}
+                    fontStyle={"bold"}
+                />
+                <Text
+                    text={visible && isGm ? '👁 ' : ''}
+                    fill={"#d6d6d6"}
+                    width={900}
+                    height={width}
+                    listening={false}
+                    x={-450}
+                    y={-1 * width}
                     align={"center"}
                     wrap={"none"}
                     verticalAlign={"middle"}

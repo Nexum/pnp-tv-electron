@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Stage, Layer, Rect, Image} from "react-konva";
 import MapLayer from "./Map/MapLayer";
-import __FowLayer from "./Map/FowLayer";
+import FowLayer from "./Map/FowLayer";
 import BackgroundLayer from "./Map/BackgroundLayer";
 import MarkerLayer from "./Map/MarkerLayer";
 import {remote} from "electron";
@@ -27,43 +27,18 @@ export default function Map({isGm}) {
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
         fow: (
             <Layer key="fow">
-                <__FowLayer isGm={isGm} base={base}></__FowLayer>
+                <FowLayer listening={activeToolbarItem != 1} isGm={isGm} base={base}></FowLayer>
+                <MarkerLayer listening={activeToolbarItem == 1} isGm={isGm} base={base}></MarkerLayer>
                 <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
             </Layer>
-        ),
-        paint: <MarkerLayer key="marker" isGm={isGm} base={base}></MarkerLayer>,
-        creature: null,
+        )
     };
 
     let layerOrder = [
         "background",
         "map",
-        "paint",
-        "creature",
         "fow",
     ];
-
-    if (isGm) {
-        if (activeToolbarItem === 1) {
-            layerOrder = [
-                "background",
-                "map",
-                "creature",
-                "fow",
-                "paint",
-            ];
-        }
-
-        if (activeToolbarItem === 3) {
-            layerOrder = [
-                "background",
-                "map",
-                "paint",
-                "fow",
-                "creature",
-            ];
-        }
-    }
 
     let currentWindow = remote.getCurrentWindow().removeAllListeners();
     currentWindow.on('resize', debounce(function () {
