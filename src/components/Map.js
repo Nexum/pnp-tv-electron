@@ -21,17 +21,17 @@ export default function Map({isGm}) {
         y: getFactor(),
     });
 
-    const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");
+    const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems");
     const layers = {
         background: <BackgroundLayer key="background" isGm={isGm} base={base}></BackgroundLayer>,
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
         fow: (
             <Layer key="fow">
-                <FowLayer listening={activeToolbarItem != 1} isGm={isGm} base={base}></FowLayer>
-                <MarkerLayer listening={activeToolbarItem == 1} isGm={isGm} base={base}></MarkerLayer>
+                <FowLayer listening={activeToolbarItems.indexOf(1) === -1} isGm={isGm} base={base}></FowLayer>
+                <MarkerLayer listening={activeToolbarItems.indexOf(1) !== -1} isGm={isGm} base={base}></MarkerLayer>
                 <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
             </Layer>
-        )
+        ),
     };
 
     let layerOrder = [
