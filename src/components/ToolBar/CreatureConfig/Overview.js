@@ -63,8 +63,7 @@ export default function Overview({}) {
     }
 
     return (
-        <>
-
+        <div>
             <div className="creature-table-header">
                 <button type="button" onClick={createNew} className={"btn btn-primary"}>+</button>
             </div>
@@ -110,6 +109,6 @@ export default function Overview({}) {
                     })}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

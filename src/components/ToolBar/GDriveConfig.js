@@ -24,7 +24,7 @@ export default function GDriveConfig({}) {
 
     return (
         <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-12">
                 <form>
                     <div className="form-group">
                         <label>API Token</label>

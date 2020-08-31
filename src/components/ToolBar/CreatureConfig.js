@@ -4,11 +4,11 @@ import Overview from "./CreatureConfig/Overview";
 
 export default function CreatureConfig({}) {
     return (
-        <div className="row">
+        <div className="row" style={{minWidth: "800px"}}>
             <div className="col-md-6">
                 <Overview></Overview>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-6">
                 <EditForm></EditForm>
             </div>
         </div>

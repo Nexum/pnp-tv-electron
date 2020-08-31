@@ -7,38 +7,51 @@ import PaintConfig from "./ToolBar/PaintConfig";
 import ConfigStore from "../lib/ConfigStore";
 import hotkeys from 'hotkeys-js';
 import GDriveConfig from "./ToolBar/GDriveConfig";
+import FightConfig from "./ToolBar/FightConfig";
 
 export default function ControlPanel({}) {
     const panels = [
         {
             label: "FOW",
             layer: "fow",
+            configName: "fow",
             config: FowConfig,
             button: useRef(),
         },
         {
             label: "Paint",
             layer: "marker",
+            configName: "marker",
             config: PaintConfig,
             button: useRef(),
         },
         {
             label: "Maps",
             layer: "map",
+            configName: "map",
             config: MapConfig,
             button: useRef(),
         },
         {
             label: "Creatures",
             layer: "creature",
+            configName: "creature",
             button: useRef(),
             config: CreatureConfig,
         },
         {
             label: "GDrive",
             layer: "gdrive",
+            configName: "gdrive",
             button: useRef(),
             config: GDriveConfig,
+        },
+        {
+            label: "Fight",
+            layer: "fight",
+            configName: "fight",
+            button: useRef(),
+            config: FightConfig,
         },
     ];
     const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");
