@@ -20,7 +20,7 @@ export default function MarkerLayer({isGm, listening, base}) {
     const markerBrushSize = ConfigStore.useConfig("markerBrushSize");
 
     async function updateMarker() {
-        if (layerGroup.current) {
+        if (layerGroup.current && map) {
             const markerImage = await getImageFromSrc(MapStore.getMarkerFilePath(map._id) + "?time=" + Date.now());
             const newImage = new Konva.Image({
                 image: markerImage,

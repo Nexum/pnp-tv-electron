@@ -19,7 +19,7 @@ export default function FowLayer({isGm, listening, base}) {
     const fowBrushSize = ConfigStore.useConfig("fowBrushSize");
 
     async function updateFow() {
-        if (group.current) {
+        if (group.current && map) {
             const fowImage = await getImageFromSrc(MapStore.getFowFilePath(map._id) + "?time=" + Date.now());
 
             if (!fowImage) {
@@ -33,10 +33,19 @@ export default function FowLayer({isGm, listening, base}) {
 
             const newImage = new Konva.Image({
                 image: fowImage,
+                listening: false,
+                transformsEnabled: 'none',
+                perfectDrawEnabled: false,
                 width: layerGroup.current.getStage().width(),
                 height: layerGroup.current.getStage().height(),
                 globalCompositeOperation: "destination-out",
             });
+
+            console.time("BLUR FILTER");
+            newImage.cache();
+            newImage.filters([Konva.Filters.Blur]);
+            newImage.blurRadius(50);
+            console.timeEnd("BLUR FILTER");
 
             group.current.add(newImage);
 
@@ -44,16 +53,14 @@ export default function FowLayer({isGm, listening, base}) {
                 fow.current.destroy();
             }
 
-            newImage.cache();
-            newImage.filters([Konva.Filters.Blur]);
-            newImage.blurRadius(50);
-            newImage.cache();
 
             fow.current = newImage;
             newImage.moveToTop();
             line.current.points([]);
             line.current.moveToTop();
+            console.time("DRAW");
             layerGroup.current.getLayer().batchDraw();
+            console.timeEnd("DRAW");
         }
     }
 

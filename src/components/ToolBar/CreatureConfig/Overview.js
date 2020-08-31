@@ -72,12 +72,12 @@ export default function Overview({}) {
                     {creatures.map((v, i) => {
 
                         let imgSrc = null;
-                        if (creatureConfigs[v.creatureType]) {
+                        if (creatureConfigs && creatureConfigs[v.creatureType]) {
                             imgSrc = creatureConfigs[v.creatureType].image;
                         }
 
                         return (
-                            <div key={i} className={"d-flex creature-row " + (selected._id === v._id ? "selected" : "")}>
+                            <div key={i} className={"d-flex creature-row " + (selected && selected._id === v._id ? "selected" : "")}>
                                 <div className="creature-name" onClick={select.bind(null, v)}>
                                     {imgSrc && <img src={imgSrc} style={{width: 20, height: 20}}/>}
                                     <input type="text" value={v.name} onChange={onInputChange.bind(null, v, "name")}/>

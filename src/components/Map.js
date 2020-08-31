@@ -21,7 +21,7 @@ export default function Map({isGm}) {
         y: getFactor(),
     });
 
-    const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems");
+    const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems") || [];
     const layers = {
         background: <BackgroundLayer key="background" isGm={isGm} base={base}></BackgroundLayer>,
         map: <MapLayer key="map" isGm={isGm} base={base}></MapLayer>,
