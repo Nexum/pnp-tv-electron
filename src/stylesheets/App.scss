@@ -81,13 +81,13 @@ html, body, .screen {
     padding: 4px 0;
 }
 
-.creature-table {
-    max-height: 170px;
-    overflow-y: scroll;
+.creature-table, .player-table {
+    max-height: 173px;
+    overflow-y: auto;
     background: white;
     color: black;
 
-    .creature-row {
+    .creature-row, .player-row {
         padding: 4px 4px;
         display: flex;
         border-bottom: 1px solid #CECECE;
@@ -97,7 +97,7 @@ html, body, .screen {
         }
     }
 
-    .creature-name {
+    .creature-name, .player-name {
         flex-grow: 1;
         cursor: pointer;
         display: flex;
@@ -113,7 +113,12 @@ html, body, .screen {
         text-align: center;
     }
 
-    .creature-actions {
+    .creature-initiative, .player-initiative {
+        width: 40px;
+        text-align: center;
+    }
+
+    .creature-actions, .player-actions {
         width: auto;
     }
 
@@ -161,4 +166,48 @@ html, body, .screen {
 
 h3 {
     font-size: 1.15rem;
+}
+
+.combat-initiative {
+    .fight {
+
+        .fighter {
+            display: flex;
+            width: auto;
+
+            &.type-player {
+                background-color: rgba(0, 74, 11, 0.4);
+            }
+            &.type-creature {
+                background-color: rgba(74, 0, 0, 0.4);
+            }
+
+            &.active {
+                border: 1px solid #00ffcd;
+            }
+
+            .order {
+                display: none;
+                width: 25px;
+                padding: 2px 4px;
+            }
+
+            .name {
+                padding: 2px 4px;
+                flex-grow: 1;
+                width: auto;
+            }
+
+            .initiative {
+                display: none;
+                width: 20px;
+                padding: 2px 4px;
+            }
+        }
+    }
+
+    .gm-options {
+        display: flex;
+        justify-content: space-between;
+    }
 }

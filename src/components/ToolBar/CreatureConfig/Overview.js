@@ -90,6 +90,9 @@ export default function Overview({}) {
                                     <input type="text" value={v.health} onChange={onInputChange.bind(null, v, "health")}/>
                                 </div>
 
+                                <div className="creature-initiative">
+                                    <input type="text" value={v.initiative} onChange={onInputChange.bind(null, v, "initiative")}/>
+                                </div>
 
                                 <div className="creature-actions">
                                     <button

@@ -7,7 +7,7 @@ import PaintConfig from "./ToolBar/PaintConfig";
 import ConfigStore from "../lib/ConfigStore";
 import hotkeys from 'hotkeys-js';
 import GDriveConfig from "./ToolBar/GDriveConfig";
-import FightConfig from "./ToolBar/FightConfig";
+import PlayerConfig from "./ToolBar/PlayerConfig";
 
 export default function ControlPanel({}) {
     const panels = [
@@ -47,14 +47,14 @@ export default function ControlPanel({}) {
             config: GDriveConfig,
         },
         {
-            label: "Fight",
-            layer: "fight",
+            label: "Player",
+            layer: "player",
             configName: "fight",
             button: useRef(),
-            config: FightConfig,
+            config: PlayerConfig,
         },
     ];
-    const activeToolbarItem = ConfigStore.useConfig("activeToolbarItem");
+    const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems") || [];
     const gmUiVisible = ConfigStore.useConfig("gmUiVisible");
 
     function toggleUI() {
@@ -73,11 +73,15 @@ export default function ControlPanel({}) {
     }, [gmUiVisible]);
 
     function togglePanel(panel) {
-        if (activeToolbarItem === panel) {
-            ConfigStore.set("activeToolbarItem", null);
+        const copy = [...activeToolbarItems];
+        const existingIndex = copy.indexOf(panel);
+
+        if (existingIndex === -1) {
+            copy.push(panel);
         } else {
-            ConfigStore.set("activeToolbarItem", panel);
+            copy.splice(existingIndex, 1);
         }
+        ConfigStore.set("activeToolbarItems", copy);
     }
 
     return (
@@ -93,7 +97,7 @@ export default function ControlPanel({}) {
                                 <div
                                     ref={v.button}
                                     key={i}
-                                    className={"mini-item " + (i === activeToolbarItem && "active")}
+                                    className={"mini-item " + (activeToolbarItems.indexOf(i) !== -1 && "active")}
                                 >
                                     <a href="#" onClick={togglePanel.bind(null, i)}>{v.label}</a>
                                 </div>
@@ -104,9 +108,9 @@ export default function ControlPanel({}) {
                 <div className="mini-item window-draggable">
                 </div>
             </div>
-            {gmUiVisible && activeToolbarItem !== null && panels[activeToolbarItem] && (
-                <ConfigWindow panel={panels[activeToolbarItem]}/>
-            )}
+            {gmUiVisible ? activeToolbarItems.map((v, i) => {
+                return (<ConfigWindow panel={panels[v]} key={i}/>);
+            }) : null}
         </>
     );
 }

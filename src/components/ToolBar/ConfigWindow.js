@@ -17,17 +17,10 @@ export default function ConfigWindow({map, panel, setGmOptions, gmOptions}) {
         }),
     });
 
-    useEffect(() => {
-        if (panel && panel.button && panel.button.current) {
-            const box = panel.button.current.getBoundingClientRect();
-
-
-        }
-    }, [panel, win, map]);
-
     return (
         <div className="config-window" ref={win} style={{
             left: pos.x,
+            display: isDragging ? "none" : "",
             top: pos.y,
         }}>
             <div className="config-window-body">

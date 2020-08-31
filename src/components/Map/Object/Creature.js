@@ -142,6 +142,7 @@ export default function Creature({name, scale, map, visible, size, remoteConfig,
                 width={width}
                 height={width}
                 rotation={rotation}
+                opacity={percentage === 0 ? 0.3 : 1}
                 draggable={isGm}
                 onDragStart={onDragStart}
                 onDragMove={onDragMove}

@@ -7,6 +7,7 @@ import GDriveStore from "../lib/GDriveStore";
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {useDrop} from 'react-dnd';
+import Combat from "./Map/Combat";
 
 export default function Screen({isGm}) {
 
@@ -38,6 +39,7 @@ export default function Screen({isGm}) {
         <div className="screen" ref={drop}>
             <Map isGm={isGm}/>
             {isGm && <ToolBar/>}
+            <Combat isGm={isGm}/>
         </div>
     );
 }
