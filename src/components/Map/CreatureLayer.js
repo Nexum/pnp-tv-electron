@@ -15,7 +15,7 @@ export default function CreatureLayer({isGm}) {
             {creatures.map((v, i) => <Creature
                 key={i}
                 isGm={isGm}
-                remoteConfig={creatureConfigs[v.imageType] || null}
+                remoteConfig={creatureConfigs[v.creatureType] || null}
                 pos={{x: 100, y: 150}}
                 scale={{x: 1, y: 1}}
                 size={"small"}

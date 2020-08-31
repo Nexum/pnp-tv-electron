@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import NewForm from "./CreatureConfig/NewForm";
 import EditForm from "./CreatureConfig/EditForm";
 import Overview from "./CreatureConfig/Overview";
 

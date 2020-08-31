@@ -18,6 +18,7 @@ export default function Creature({name, scale, map, visible, size, remoteConfig,
         small: 40,
         medium: 60,
         large: 80,
+        big: 80,
         epic: 140,
     };
     const width = sizes[size];

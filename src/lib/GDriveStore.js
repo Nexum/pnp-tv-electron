@@ -35,13 +35,14 @@ class GDriveStore {
 
         const creatures = {};
         for (let i = 1; i < dbContentArr.length; i++) {
-            const [ID, name, hp, initiative] = dbContentArr[i];
+            const [ID, name, hp, initiative, baseSize] = dbContentArr[i];
 
             creatures[ID] = {
                 _id: ID,
-                name: name,
-                health: hp,
-                initiative: initiative,
+                name: String(name).trim(),
+                health: parseInt(hp) || 0,
+                size: String(baseSize).trim(),
+                initiative: parseInt(initiative || 0),
                 image: localImageMap[ID] || null,
             };
         }

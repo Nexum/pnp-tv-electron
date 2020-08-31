@@ -56,7 +56,7 @@ export default function Overview({}) {
             health: selectedData ? selectedData.health : 0,
             currentHealth: selectedData ? selectedData.health : 0,
             size: selectedData ? selectedData.size : "small",
-            imageType: selectedData ? selectedData.imageType : null,
+            creatureType: selectedData ? selectedData.creatureType : null,
         });
 
         select(newCreature);
@@ -73,8 +73,8 @@ export default function Overview({}) {
                     {creatures.map((v, i) => {
 
                         let imgSrc = null;
-                        if (creatureConfigs[v.imageType]) {
-                            imgSrc = creatureConfigs[v.imageType].image;
+                        if (creatureConfigs[v.creatureType]) {
+                            imgSrc = creatureConfigs[v.creatureType].image;
                         }
 
                         return (

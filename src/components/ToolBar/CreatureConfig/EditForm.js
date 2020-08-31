@@ -28,7 +28,20 @@ export default function EditForm({}) {
         });
     }
 
-    if(!creature) {
+    function onTypeChange(value) {
+        console.log("EditForm.js:32 / onTypeChange", value);
+        CreatureStore.save({
+            map: creature.map,
+            _id: creature._id,
+            creatureType: value._id,
+            size: value.size,
+            health: value.health,
+            currentHealth: value.health,
+            initiative: value.initiative || 0,
+        });
+    }
+
+    if (!creature) {
         return null;
     }
 
@@ -46,7 +59,7 @@ export default function EditForm({}) {
             </div>
             <div className="form-group">
                 <label>Typ</label>
-                <CreatureTypeSelect onChange={onInputChange.bind(null, "imageType")} value={creature.imageType}></CreatureTypeSelect>
+                <CreatureTypeSelect onChange={onTypeChange} value={creature.creatureType}></CreatureTypeSelect>
             </div>
             <div className="form-check">
                 <input className="form-check-input"
