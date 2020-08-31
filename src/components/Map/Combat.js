@@ -5,6 +5,7 @@ import {useDrag} from "react-dnd";
 
 export default function Combat({isGm}) {
 
+    const visible = ConfigStore.useConfig("combatVisible");
     const activeInitiative = ConfigStore.useConfig("combat.activeInitiative") || 0;
     const pos = ConfigStore.useConfig("configWindow.combatWindow.pos") || {};
     const players = PlayerStore.usePlayers();
@@ -120,7 +121,7 @@ export default function Combat({isGm}) {
     return (
         <div className="combat-initiative config-window" ref={win} style={{
             left: pos.x,
-            display: isDragging ? "none" : "",
+            display: isDragging || !visible ? "none" : "",
             top: pos.y,
         }}>
             <div className="config-window-body">

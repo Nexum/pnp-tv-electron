@@ -54,11 +54,16 @@ export default function ControlPanel({}) {
             config: PlayerConfig,
         },
     ];
+    const combatVisible = ConfigStore.useConfig("combatVisible");
     const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems") || [];
     const gmUiVisible = ConfigStore.useConfig("gmUiVisible");
 
     function toggleUI() {
         ConfigStore.set("gmUiVisible", !gmUiVisible);
+    }
+
+    function toggleCombat() {
+        ConfigStore.set("combatVisible", !combatVisible);
     }
 
     useEffect(() => {
@@ -89,6 +94,9 @@ export default function ControlPanel({}) {
             <div className="mini-toolbar">
                 <div className={"mini-item window-ui " + (gmUiVisible ? "active" : "inactive")} onClick={toggleUI}>
                     &#x1F441;
+                </div>
+                <div className={"mini-item window-ui " + (combatVisible ? "active" : "inactive")} onClick={toggleCombat}>
+                    &#9876;
                 </div>
                 <div className="mini-nav">
                     {
