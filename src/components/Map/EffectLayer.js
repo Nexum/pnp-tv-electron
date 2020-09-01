@@ -41,7 +41,7 @@ export default function EffectLayer({isGm, base}) {
                     return null;
                 }
 
-                return <Effect config={effects[v.effect]} rotation={v.rotation || 0} scale={v.scale || {x: 1, y: 1}} pos={v.pos || {
+                return <Effect config={effects[v.effect]} isGm={isGm} visible={v.visible} rotation={v.rotation || 0} scale={v.scale || {x: 1, y: 1}} pos={v.pos || {
                     x: 100, y: 100,
                 }
                 } configKey={i} key={v._id}/>;

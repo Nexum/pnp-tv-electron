@@ -29,6 +29,12 @@ export default function Overview({}) {
         ConfigStore.set("activeEffects", effects);
     }
 
+    function toggleEffect(effectKey) {
+        const effects = ConfigStore.get("activeEffects");
+        effects[effectKey].visible = !effects[effectKey].visible;
+        ConfigStore.set("activeEffects", effects);
+    }
+
     return (
         <div style={{width: "300px"}}>
             <div className="effect-table-header">
@@ -59,6 +65,20 @@ export default function Overview({}) {
                                 </div>
 
                                 <div className="effect-actions">
+                                    <button
+                                        className="btn btn-sm btn-success"
+                                        onClick={toggleEffect.bind(null, i)}>
+                                        {v.visible ? (
+                                            <>
+                                                {config.loop ? "Hide" : "Playing..."}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {config.loop ? "Show" : "Play"}
+                                            </>
+                                        )}
+
+                                    </button>
                                     <button
                                         className="btn btn-sm btn-danger"
                                         onClick={deleteEffect.bind(null, i)}>

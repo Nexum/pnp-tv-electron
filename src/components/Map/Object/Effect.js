@@ -1,9 +1,8 @@
-import {Group, Rect, Sprite, Transformer} from "react-konva";
+import {Group, Text, Sprite, Transformer} from "react-konva";
 import {useEffect, useRef, useState} from "react";
 import ConfigStore from "../../../lib/ConfigStore";
-import {HotKeys} from "react-hotkeys";
 
-export default function Effect({config, pos, scale, rotation, configKey}) {
+export default function Effect({config, pos, scale, isGm, rotation, visible, configKey}) {
 
     const [image, setImage] = useState(null);
     const [selected, setSelected] = useState(false);
@@ -20,12 +19,18 @@ export default function Effect({config, pos, scale, rotation, configKey}) {
         imageObj.src = filePath;
     }, [config]);
 
+    function hideEffect(effectKey) {
+        const effects = ConfigStore.get("activeEffects");
+        effects[effectKey].visible = false;
+        ConfigStore.set("activeEffects", effects);
+    }
+
     useEffect(() => {
         if (sprite.current) {
             sprite.current.start();
 
             sprite.current.on('frameIndexChange', function () {
-                if (!config.loop) {
+                if (!config.loop && !isGm) {
                     let lastFrame = config.frames;
                     if (config.bounce) {
                         lastFrame = lastFrame * 2;
@@ -33,7 +38,7 @@ export default function Effect({config, pos, scale, rotation, configKey}) {
 
                     if (this.frameIndex() === lastFrame - 1) {
                         sprite.current.stop();
-                        deleteEffect();
+                        hideEffect(configKey);
                     }
                 }
             });
@@ -90,17 +95,17 @@ export default function Effect({config, pos, scale, rotation, configKey}) {
     }
 
     function onTransformEnd(e) {
+
+        console.log("Effect.js:120 / Effect", config.name, e.target.scaleX());
         const effects = ConfigStore.get("activeEffects");
         effects[configKey].scale = {
-            x: e.target.attrs.scaleX,
-            y: e.target.attrs.scaleY,
+            x: e.target.scaleX(),
+            y: e.target.scaleY(),
         };
-        /*
         effects[configKey].pos = {
             x: e.target.x(),
             y: e.target.y(),
         };
-         */
         effects[configKey].rotation = e.target.attrs.rotation;
         ConfigStore.set("activeEffects", effects);
     }
@@ -109,48 +114,32 @@ export default function Effect({config, pos, scale, rotation, configKey}) {
         setSelected(!selected);
     }
 
-    function deleteEffect() {
-        if (!selected) {
-            return;
-        }
 
-        const effects = ConfigStore.get("activeEffects");
-        effects.splice(configKey, 1);
-        ConfigStore.set("activeEffects", effects);
+    if (!isGm && !visible) {
+        return null;
     }
 
     return (
         <>
-            <Group
+            {image && <Sprite
+                drawBorder={true}
                 x={pos.x}
                 y={pos.y}
                 draggable={true}
                 onDragEnd={onDragEnd}
-            >
-                {image && <Sprite
-                    drawBorder={true}
-                    ref={sprite}
-                    rotation={rotation}
-                    scaleX={scale.x}
-                    onClick={toggleSelected}
-                    onTransformEnd={onTransformEnd}
-                    scaleY={scale.y}
-                    animation={"idle"}
-                    frameRate={config.frameRate}
-                    animations={animations}
-                    width={config.size}
-                    height={config.height || config.size}
-                    image={image}
-                />}
-                {selected && <Rect
-                    width={50}
-                    height={50}
-                    fill={"#FF0000"}
-                    x={sprite.current.width() * scale.x}
-                    y={0}
-                    onClick={deleteEffect}
-                />}
-            </Group>
+                ref={sprite}
+                rotation={rotation}
+                scaleX={scale.x}
+                onClick={toggleSelected}
+                onTransformEnd={onTransformEnd}
+                scaleY={scale.y}
+                animation={"idle"}
+                frameRate={config.frameRate}
+                animations={animations}
+                width={config.size}
+                height={config.height || config.size}
+                image={image}
+            />}
             {selected && <Transformer
                 ref={transformer}
             />}

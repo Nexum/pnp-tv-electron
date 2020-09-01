@@ -30,8 +30,8 @@ export default function Map({isGm}) {
             <Layer key="fow">
                 <FowLayer listening={activeToolbarItems.indexOf(1) === -1} isGm={isGm} base={base}></FowLayer>
                 <MarkerLayer listening={activeToolbarItems.indexOf(1) !== -1} isGm={isGm} base={base}></MarkerLayer>
-                <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
                 <EffectLayer isGm={isGm} base={base}></EffectLayer>
+                <CreatureLayer isGm={isGm} base={base}></CreatureLayer>
             </Layer>
         ),
     };

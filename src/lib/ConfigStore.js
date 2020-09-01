@@ -80,6 +80,17 @@ class ConfigStore extends EventEmitter {
                     bounce: false,
                     reverse: true,
                 },
+                4: {
+                    name: "Magic Circle",
+                    file: "4.Magic-Circle.png",
+                    rows: 4,
+                    size: 256,
+                    frames: 32,
+                    frameRate: 16,
+                    loop: false,
+                    bounce: false,
+                    reverse: false,
+                },
             };
         }
 
