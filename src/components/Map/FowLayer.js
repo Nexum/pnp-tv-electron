@@ -41,26 +41,21 @@ export default function FowLayer({isGm, listening, base}) {
                 globalCompositeOperation: "destination-out",
             });
 
-            console.time("BLUR FILTER");
             newImage.cache();
             newImage.filters([Konva.Filters.Blur]);
             newImage.blurRadius(50);
-            console.timeEnd("BLUR FILTER");
 
             group.current.add(newImage);
 
             if (fow.current) {
                 fow.current.destroy();
             }
-
-
             fow.current = newImage;
+
             newImage.moveToTop();
             line.current.points([]);
             line.current.moveToTop();
-            console.time("DRAW");
             layerGroup.current.getLayer().batchDraw();
-            console.timeEnd("DRAW");
         }
     }
 
@@ -187,6 +182,8 @@ export default function FowLayer({isGm, listening, base}) {
             fow.current && fow.current.blurRadius(50);
             line.current.globalCompositeOperation("destination-out");
         }
+
+        layerGroup.current.getLayer().batchDraw();
     }
 
     return (
