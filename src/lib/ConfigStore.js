@@ -43,12 +43,56 @@ class ConfigStore extends EventEmitter {
     }
 
     get(path) {
+
+        if (path === "effects") {
+            return {
+                1: {
+                    name: "Explosion",
+                    file: "1.Explosion.png",
+                    rows: 4,
+                    size: 64,
+                    frames: 16,
+                    frameRate: 16,
+                    loop: false,
+                    bounce: true,
+                    reverse: true,
+                },
+                2: {
+                    name: "Smoke",
+                    file: "2.Smoke.png",
+                    rows: 5,
+                    size: 256,
+                    frames: 30,
+                    frameRate: 16,
+                    loop: true,
+                    bounce: false,
+                    reverse: false,
+                },
+                3: {
+                    name: "Fire",
+                    file: "3.Fire.png",
+                    rows: 1,
+                    size: 81,
+                    height: 123,
+                    frames: 40,
+                    frameRate: 16,
+                    loop: true,
+                    bounce: false,
+                    reverse: true,
+                },
+            };
+        }
+
         return this.Store.get("config." + path);
     }
 
     set(path, value) {
         console.log("ConfigStore.js:44 / set", path, value);
         this.Store.set("config." + path, value);
+    }
+
+    getEffectFilePath(file) {
+        return path.join("img", "effects", file);
     }
 
 

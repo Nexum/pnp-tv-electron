@@ -81,13 +81,13 @@ html, body, .screen {
     padding: 4px 0;
 }
 
-.creature-table, .player-table {
+.creature-table, .player-table, .effect-table {
     max-height: 173px;
     overflow-y: auto;
     background: white;
     color: black;
 
-    .creature-row, .player-row {
+    .creature-row, .player-row, .effect-row {
         padding: 4px 4px;
         display: flex;
         border-bottom: 1px solid #CECECE;
@@ -97,7 +97,7 @@ html, body, .screen {
         }
     }
 
-    .creature-name, .player-name {
+    .creature-name, .player-name, .effect-name {
         flex-grow: 1;
         cursor: pointer;
         display: flex;

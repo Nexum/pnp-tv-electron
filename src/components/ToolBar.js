@@ -8,6 +8,7 @@ import ConfigStore from "../lib/ConfigStore";
 import hotkeys from 'hotkeys-js';
 import GDriveConfig from "./ToolBar/GDriveConfig";
 import PlayerConfig from "./ToolBar/PlayerConfig";
+import EffectConfig from "./ToolBar/EffectConfig";
 
 export default function ControlPanel({}) {
     const panels = [
@@ -52,6 +53,13 @@ export default function ControlPanel({}) {
             configName: "fight",
             button: useRef(),
             config: PlayerConfig,
+        },
+        {
+            label: "Effects",
+            layer: "effects",
+            configName: "effects",
+            button: useRef(),
+            config: EffectConfig,
         },
     ];
     const combatVisible = ConfigStore.useConfig("combatVisible");
