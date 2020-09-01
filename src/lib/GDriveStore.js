@@ -14,8 +14,8 @@ class GDriveStore {
         this.drive = google.drive({version: 'v3', auth: this.config.token});
     }
 
-    async reloadCreatures() {
-        const dbFile = await this.getDatabaseFile();
+    async reloadEffects() {
+        const dbFile = await this.getDatabaseFile(this.config.folderEffects);
 
         if (!dbFile) {
             console.log("GDriveStore.js:27 / DB NOT FOUND");
@@ -30,8 +30,46 @@ class GDriveStore {
         }
 
         const dbContentArr = dbContent.split("\n").map(v => v.split(","));
-        const imageFiles = await this.getImageFiles();
-        const localImageMap = await this.downloadImages(imageFiles);
+        const imageFiles = await this.getImageFiles(this.config.folderEffects);
+        const localImageMap = await this.downloadImages(imageFiles, "effects");
+        const effects = {};
+
+        for (let i = 1; i < dbContentArr.length; i++) {
+            const [ID, name, height, frameCount, loop, bounce, reverse, frameRate] = dbContentArr[i];
+
+            effects[parseInt(ID)] = {
+                name: name,
+                file: localImageMap[ID] || null,
+                height: height,
+                frameCount: frameCount,
+                frameRate: frameRate || 16,
+                loop: loop === "TRUE",
+                bounce: bounce === "TRUE",
+                reverse: reverse === "TRUE",
+            };
+        }
+
+        ConfigStore.set("gdrive.effects", effects);
+    }
+
+    async reloadCreatures() {
+        const dbFile = await this.getDatabaseFile(this.config.folder);
+
+        if (!dbFile) {
+            console.log("GDriveStore.js:27 / DB NOT FOUND");
+            return;
+        }
+
+        const dbContent = await this.getFileContent(dbFile.id);
+
+        if (!dbContent) {
+            console.log("GDriveStore.js:27 / DB EMPTY");
+            return;
+        }
+
+        const dbContentArr = dbContent.split("\n").map(v => v.split(","));
+        const imageFiles = await this.getImageFiles(this.config.folder);
+        const localImageMap = await this.downloadImages(imageFiles, "creatures");
 
         const creatures = {};
         for (let i = 1; i < dbContentArr.length; i++) {
@@ -65,16 +103,16 @@ class GDriveStore {
         return file.data;
     }
 
-    getRootPath() {
-        return path.join(app.getPath("userData"), "gdrive");
+    getRootPath(type) {
+        return path.join(app.getPath("userData"), "gdrive", type);
     }
 
-    async downloadImages(images) {
+    async downloadImages(images, type) {
         const map = {};
 
         for (let i = 0; i < images.length; i++) {
             const image = images[i];
-            const destPath = path.join(this.getRootPath(), image.name);
+            const destPath = path.join(this.getRootPath(type), image.name);
             const file = await this.drive.files.get({
                 fileId: image.id,
                 alt: "media",
@@ -90,22 +128,22 @@ class GDriveStore {
         return map;
     }
 
-    async getImageFiles() {
+    async getImageFiles(folder) {
         const drive = this.drive;
 
         const res = await drive.files.list({
-            q: "'" + this.config.folder + "' in parents AND mimeType:'image/png'",
+            q: "'" + folder + "' in parents AND mimeType:'image/png'",
             fields: 'files(id,name)',
         });
 
         return res.data.files;
     }
 
-    async getDatabaseFile() {
+    async getDatabaseFile(folder) {
         const drive = this.drive;
 
         const res = await drive.files.list({
-            q: "'" + this.config.folder + "' in parents AND mimeType:'application/vnd.google-apps.spreadsheet'",
+            q: "'" + folder + "' in parents AND mimeType:'application/vnd.google-apps.spreadsheet'",
             pageSize: 1,
             fields: 'files(id)',
         });

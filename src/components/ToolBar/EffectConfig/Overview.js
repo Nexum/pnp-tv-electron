@@ -5,8 +5,8 @@ import CreatureStore from "../../../lib/CreatureStore";
 import ObjectID from "bson-objectid";
 
 export default function Overview({}) {
-    const effects = ConfigStore.useConfig("effects") || {};
-    const activeEffects = ConfigStore.useConfig("activeEffects");
+    const effects = ConfigStore.useConfig("gdrive.effects") || {};
+    const activeEffects = ConfigStore.useConfig("activeEffects") || [];
     const selectedType = ConfigStore.useConfig("effectsForm.selectedType");
 
     function createNew() {

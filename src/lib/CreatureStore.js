@@ -25,10 +25,6 @@ class CreatureStore extends EventEmitter {
         });
     }
 
-    async reloadGDrive() {
-        await GDriveStore.reloadCreatures();
-    }
-
     get(mapId, id) {
         if (id) {
             return this.Store.get("creatures." + mapId + "." + id);

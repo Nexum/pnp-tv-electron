@@ -13,10 +13,12 @@ export default function Screen({isGm}) {
 
     const token = ConfigStore.useConfig("gdrive.token");
     const folder = ConfigStore.useConfig("gdrive.folder");
+    const folderEffects = ConfigStore.useConfig("gdrive.folderEffects");
 
     GDriveStore.setConfig({
         token: token,
         folder: folder,
+        folderEffects: folderEffects,
     });
 
     const [, drop] = useDrop({

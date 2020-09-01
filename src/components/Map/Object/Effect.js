@@ -5,7 +5,9 @@ import ConfigStore from "../../../lib/ConfigStore";
 export default function Effect({config, pos, scale, isGm, rotation, visible, configKey}) {
 
     const [image, setImage] = useState(null);
+    const [width, setWidth] = useState(null);
     const [selected, setSelected] = useState(false);
+    const [animations, setAnimations] = useState({idle: []});
 
     const sprite = useRef();
     const transformer = useRef();
@@ -15,8 +17,7 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
         imageObj.onload = function () {
             setImage(imageObj);
         };
-        const filePath = ConfigStore.getEffectFilePath(config.file);
-        imageObj.src = filePath;
+        imageObj.src = config.file;
     }, [config]);
 
     function hideEffect(effectKey) {
@@ -31,7 +32,7 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
 
             sprite.current.on('frameIndexChange', function () {
                 if (!config.loop && !isGm) {
-                    let lastFrame = config.frames;
+                    let lastFrame = config.frameCount;
                     if (config.bounce) {
                         lastFrame = lastFrame * 2;
                     }
@@ -43,7 +44,7 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
                 }
             });
         }
-    }, [image]);
+    }, [animations]);
 
     useEffect(() => {
         if (selected && transformer.current && sprite.current) {
@@ -52,38 +53,50 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
         }
     }, [selected]);
 
-    let animations = {idle: []};
-    const perRow = Math.ceil(config.frames / config.rows);
-
-    for (let row = 0; row < (config.rows || 1); row++) {
-        for (let i = 0; i < perRow; i++) {
-            let frameConfig = [
-                i * config.size,
-                row * config.size,
-                config.size,
-                config.height || config.size,
-            ];
-
-            animations.idle.push(frameConfig);
+    useEffect(() => {
+        if (!image) {
+            return;
         }
-    }
 
-    if (config.reverse) {
-        animations.idle.reverse();
-    }
+        let animations = {idle: []};
 
-    if (config.bounce) {
-        const copy = animations.idle.concat([]);
-        copy.reverse();
-        animations.idle = animations.idle.concat(copy);
-    }
+        const rows = Math.ceil(image.height / config.height);
+        const width = Math.ceil(image.width / (config.frameCount / rows));
+        setWidth(width);
+        const perRow = Math.ceil(config.frameCount / rows);
 
-    const idle = animations.idle;
-    animations.idle = [];
-    for (let i = 0; i < idle.length; i++) {
-        const animationFrame = idle[i];
-        animations.idle = animations.idle.concat(animationFrame);
-    }
+        for (let row = 0; row < (rows); row++) {
+            for (let i = 0; i < perRow; i++) {
+                let frameConfig = [
+                    i * width,
+                    row * width,
+                    width,
+                    config.height,
+                ];
+
+                animations.idle.push(frameConfig);
+            }
+        }
+
+        if (config.reverse) {
+            animations.idle.reverse();
+        }
+
+        if (config.bounce) {
+            const copy = animations.idle.concat([]);
+            copy.reverse();
+            animations.idle = animations.idle.concat(copy);
+        }
+
+        const idle = animations.idle;
+        animations.idle = [];
+        for (let i = 0; i < idle.length; i++) {
+            const animationFrame = idle[i];
+            animations.idle = animations.idle.concat(animationFrame);
+        }
+
+        setAnimations(animations);
+    }, [image]);
 
     function onDragEnd(e) {
         const effects = ConfigStore.get("activeEffects");
@@ -95,8 +108,6 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
     }
 
     function onTransformEnd(e) {
-
-        console.log("Effect.js:120 / Effect", config.name, e.target.scaleX());
         const effects = ConfigStore.get("activeEffects");
         effects[configKey].scale = {
             x: e.target.scaleX(),
@@ -113,7 +124,6 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
     function toggleSelected() {
         setSelected(!selected);
     }
-
 
     if (!isGm && !visible) {
         return null;
@@ -134,14 +144,15 @@ export default function Effect({config, pos, scale, isGm, rotation, visible, con
                 onTransformEnd={onTransformEnd}
                 scaleY={scale.y}
                 animation={"idle"}
-                frameRate={config.frameRate}
+                frameRate={String(config.frameRate).trim() || 16}
                 animations={animations}
-                width={config.size}
-                height={config.height || config.size}
+                width={width}
+                height={parseInt(config.height)}
                 image={image}
             />}
             {selected && <Transformer
                 ref={transformer}
+                centeredScaling={true}
             />}
         </>
     );
