@@ -17,10 +17,10 @@ export default function GDriveConfig({}) {
         try {
             await GDriveStore.reloadCreatures();
             await GDriveStore.reloadEffects();
+            ConfigStore.set("gdrive.loaded", true);
         } catch (e) {
             setError(e.toString());
         }
-        ConfigStore.set("gdrive.loaded", true);
         setReloading(false);
     }
 
