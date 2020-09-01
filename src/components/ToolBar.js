@@ -63,8 +63,13 @@ export default function ControlPanel({}) {
         },
     ];
     const combatVisible = ConfigStore.useConfig("combatVisible");
-    const activeToolbarItems = ConfigStore.useConfig("activeToolbarItems") || [];
+    let activeToolbarItems = ConfigStore.useConfig("activeToolbarItems") || [];
     const gmUiVisible = ConfigStore.useConfig("gmUiVisible");
+    const gdriveloaded = ConfigStore.useConfig("gdrive.loaded");
+
+    if(!gdriveloaded) {
+        activeToolbarItems = [4];
+    }
 
     function toggleUI() {
         ConfigStore.set("gmUiVisible", !gmUiVisible);

@@ -20,6 +20,7 @@ export default function GDriveConfig({}) {
         } catch (e) {
             setError(e.toString());
         }
+        ConfigStore.set("gdrive.loaded", true);
         setReloading(false);
     }
 
